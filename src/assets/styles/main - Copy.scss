@@ -1,0 +1,43 @@
+#app-breadcrumb .col-xs-auto {
+	float: right;
+}
+
+#app-breadcrumb .col-xs-auto:first-child {
+	float: left;
+}
+
+#app-utility {
+	padding: 1rem;
+}
+strong {
+  font-weight: bold;
+}
+
+#maincontent .panel h2.panel-title {
+  color: #000;
+}
+
+#maincontent .panel table {
+  margin: 0;
+}
+
+#maincontent .panel ul {
+  margin: 0;
+}
+
+#maincontent ul, #maincontent ol {
+  padding: 0;
+}
+
+#maincontent .form-group {
+  margin-bottom: 10px;
+}
+
+#maincontent form a.btn {
+  text-decoration: none;
+  color: #333;
+}
+
+#maincontent table th, #maincontent table td, #maincontent form table th, #maincontent form table td {
+  word-break: normal;
+}

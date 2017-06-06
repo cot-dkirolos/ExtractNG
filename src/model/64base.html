@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>Click the button to encode a string in base-64.</p>
+
+<button onclick="myFunction()">Encode</button>
+
+<p><strong>Note:</strong> The btoa() method is not supported in IE9 and earlier.</p>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var users = {
+  wshe: {
+    userID: 'wshe',
+    name: 'William She',
+    groupID: 'super_admin_all_group'
+  },
+  dkirolo: {
+    userID: 'dkirolo',
+    name: 'David Kirolos',
+    groupID: 'super_admin_all_group'
+  },
+  tcashma: {
+    userID: 'tcashma',
+    name: 'Todd Cashman',
+    groupID: 'super_admin_all_group'
+  },
+  jmacedo: {
+    userID: 'jmacedo',
+    name: 'Johan Macedo',
+    groupID: 'super_admin_all_group'
+  },
+  rzheng: {
+    userID: 'rzheng',
+    name: 'Richard Zeng',
+    groupID: 'super_admin_all_group'
+  },
+  mpalerm: {
+    userID: 'mpalerm',
+    name: 'Marco Palermo',
+    groupID: 'super_admin_all_group'
+  },
+  jdeng: {
+    userID: 'jdeng',
+    name: 'Janet',
+    groupID: 'super_admin_all_group'
+  },
+  SDONKEN: {
+    userID: 'SDONKEN',
+    name: 'Srinivasa Donkena',
+    groupID: 'epm_admin_all_group'
+  },
+  echan4: {
+    userID: 'echan4',
+    name: 'Edward Chan',
+    groupID: 'epm_admin_all_group'
+  },
+  mchan: {
+    userID: 'mchan',
+    name: 'Monita Chan',
+    groupID: 'epm_admin_all_group'
+  },
+  rbezaire: {
+    userID: 'rbezaire',
+    name: 'Rob Bezaire',
+    groupID: 'epm_admin_all_group'
+  },
+  isyedmo: {
+    userID: 'isyedmo',
+    name: 'Iqbal Syedmohammad',
+    groupID: 'epm_admin_all_group'
+  },
+  azaria: {
+    userID: 'azaria',
+    name: 'Andre Zaria',
+    groupID: 'epm_admin_all_group'
+  },
+  rgentry: {
+    userID: 'rgentry',
+    name: 'Richard Gentry',
+    groupID: 'epm_admin_all_group'
+  },
+  mnajafi: {
+    userID: 'mnajafi',
+    name: 'Mona Najafi',
+    groupID: 'epm_admin_all_group'
+  },
+  felix: {
+    userID: 'felix',
+    name: 'Felix Law',
+    groupID: 'epm_admin_all_group'
+  },
+  ashersh: {
+    userID: 'ashersh',
+    name: 'Anatoliy Shershen',
+    groupID: 'division_admin_court_group'
+  },
+  parhinso: {
+    userID: 'parhinso',
+    name: 'Philip Arhinson',
+    groupID: 'division_admin_court_group'
+  },
+  cgarcia: {
+    userID: 'cgarcia',
+    name: 'Carlos Garcia',
+    groupID: 'division_admin_court_group'
+  },
+  shua2: {
+    userID: 'shua2',
+    name: 'Sherry Hua',
+    groupID: 'division_admin_court_group'
+  },
+  asimpso1: {
+    userID: 'asimpso1',
+    name: 'Anthony Simpson',
+    groupID: 'division_admin_fire_group'
+  },
+  dsacche: {
+    userID: 'dsacche',
+    name: 'Daniel Sacchetti',
+    groupID: 'division_admin_fire_group'
+  },
+  dcarr2: {
+    userID: 'dcarr2',
+    name: 'Denis Carri',
+    groupID: 'odata_admin_all_group'
+  },
+  rgarnet: {
+    userID: 'rgarnet',
+    name: 'Ryan Garnett',
+    groupID: 'odata_admin_all_group'
+  },
+  colynyk: {
+    userID: 'colynyk',
+    name: 'Chris Olynyk',
+    groupID: 'division_admin_paramedice_group'
+  },
+  dcarter: {
+    userID: 'dcarter',
+    name: 'Dave Carter',
+    groupID: 'swms_admin_all_group'
+  },
+  cwongb: {
+    userID: 'cwongb',
+    name: 'Chin Wong',
+    groupID: 'swms_admin_all_group'
+  },
+  eli7: {
+    userID: 'eli7',
+    name: 'Eric Li',
+    groupID: 'swms_admin_all_group'
+  },
+  iwogar: {
+    userID: 'iwogar',
+    name: 'Ikori Wogar',
+    groupID: 'swms_admin_all_group'
+  },
+  bneutel: {
+    userID: 'bneutel',
+    name: 'Bert Neutel',
+    groupID: 'swms_admin_all_group'
+  },
+  aoboh: {
+    userID: 'aoboh',
+    name: 'Abdul Oboh',
+    groupID: 'swms_admin_all_group'
+  },
+  ddeacon: {
+    userID: 'ddeacon',
+    name: 'Daniela Deaconu',
+    groupID: 'swms_admin_all_group'
+  },
+  nrajaba: {
+    userID: 'nrajaba',
+    name: 'Navaz Rajabali',
+    groupID: 'swms_admin_all_group'
+  }
+
+};
+
+
+
+var groups = {
+  super_admin_all_group: {
+    groupID: 'super_admin_all_group',
+    name: 'Super Admin Group',
+    roleKey: 'super_admin',
+    divisions: ['all'],
+  },
+  epm_admin_all_group: {
+    groupID: 'epm_admin_all_group',
+    name: 'EPM Admin Group',
+    roleKey: 'epm_admin',
+    divisions: ['all'],
+  },
+  odata_admin_all_group: {
+    groupID: 'odata_admin_all_group',
+    name: 'Open Data Admin Group',
+    roleKey: 'odata_admin',
+    divisions: ['all']
+  },
+  swms_admin_all_group: {
+    groupID: 'swms_admin_all_Group',
+    name: 'SWMS Admin Group',
+    roleKey: 'swms_admin',
+    divisions: ['all']
+  },
+  swms_analyst_all_group: {
+    groupID: 'swms_analyst_all_group',
+    name: 'SWMS Analyst Group',
+    roleKey: 'swms_analyst',
+    divisions: ['all']
+  },
+  division_admin_311_group: {
+    groupID: 'division_admin_311_group',
+    name: '311 Toronto Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['311']
+  },
+  division_analyst_311_group: {
+    groupID: 'division_analyst_311_group',
+    name: '311 Toronto Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['311']
+  },
+  division_admin_court_group: {
+    groupID: 'division_admin_court_group',
+    name: 'Court Services Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['court']
+  },
+  division_analyst_court_group: {
+    groupID: 'division_analyst_court_group',
+    name: 'Court Services Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['court']
+  },
+  division_admin_realstate_group: {
+    groupID: 'division_admin_realstate_group',
+    name: 'Realstate Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['realstate']
+  },
+  division_analyst_realstate_group: {
+    groupID: 'division_analyst_realstate_group',
+    name: 'Realstate Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['realstate']
+  },
+  division_admin_financialplaning_group: {
+    groupID: 'division_admin_financialplaning_group',
+    name: 'Financial Planning Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['financialplaning']
+  },
+  division_analyst_financialplaning_group: {
+    groupID: 'division_analyst_financialplaning_group',
+    name: 'Financial Planning Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['financialplaning']
+  },
+  division_admin_fire_group: {
+    groupID: 'division_admin_fire_group',
+    name: 'Fire Services Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['fire']
+  },
+  division_analyst_fire_group: {
+    groupID: 'division_analyst_fire_group',
+    name: 'Fire Services Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['fire']
+  },
+  division_admin_fleet_group: {
+    groupID: 'division_admin_fleet_group',
+    name: 'Fleet Services Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['fleet']
+  },
+  division_analyst_fleet_group: {
+    groupID: 'division_analyst_fleet_group',
+    name: 'Fleet Services Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['fleet']
+  },
+  division_admin_municipal_group: {
+    groupID: 'division_admin_municipal_group',
+    name: 'Municipal Licensing Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['municipal']
+  },
+  division_analyst_municipal_group: {
+    groupID: 'division_analyst_municipal_group',
+    name: 'Municipal Licensing Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['municipal']
+  },
+  division_admin_parks_group: {
+    groupID: 'division_admin_parks_group',
+    name: 'Parks, Forestry & Recreation Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['parks']
+  },
+  division_analyst_parks_group: {
+    groupID: 'division_analyst_parks_group',
+    name: 'Parks, Forestry & Recreation Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['parks']
+  },
+  division_admin_paramedice_group: {
+    groupID: 'division_admin_paramedic_group',
+    name: 'Toronto Paramedic Services Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['paramedic']
+  },
+  division_analyst_paramedic_group: {
+    groupID: 'division_analyst_fparamedic_group',
+    name: 'Toronto Paramedic Services Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['paramedic']
+  },
+  division_admin_transportation_group: {
+    groupID: 'division_admin_transportation_group',
+    name: 'Transportation Services Admin Group',
+    roleKey: 'division_admin',
+    divisions: ['transportation']
+  },
+  division_analyst_transportation_group: {
+    groupID: 'division_analyst_transportation_group',
+    name: 'Transportation Services Analyst Group',
+    roleKey: 'division_analyst',
+    divisions: ['transportation']
+  }
+};
+
+var appConfig = {
+  divisionsList: [
+    { value: '311', label: '311 Toronto' },
+    { value: 'court', label: 'Court Services' },
+    { value: 'realstate', label: 'Facilities, Real Estate, Environment & Energy' },
+    { value: 'financialplaning', label: 'Financial Planning' },
+    { value: 'fire', label: 'Fire Services' },
+    { value: 'fleet', label: 'Fleet Services' },
+    { value: 'municipal', label: 'Municipal Licensing & Standards' },
+    { value: 'parks', label: 'Parks, Forestry & Recreation' },
+    { value: 'paramedic', label: 'Toronto Paramedic Services' },
+    { value: 'transportation', label: 'Transportation Services' }
+  ],
+  categoryList: [
+    { value: 'epm', label: 'EPM' },
+    { value: 'odata', label: 'OpenData' },
+    { value: 'swms', label: 'SWMS' }],
+  configStatus: [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ],
+  dbConnectionDefaults: [
+    {
+      value: 'excelsheet',
+      hostName: '/VALID_DATA_DROPS_DIRECTORY_PATH/',
+      port: null,
+      serviceName: null
+    }, {
+      value: 'oracle',
+      hostName: 'sunrise.corp.toronto.ca',
+      port: 1521,
+      serviceName: 'COTAPPDV'
+    }, {
+      value: 'sqlserver',
+      hostName: 'schrfm4',
+      port: 1433,
+      serviceName: 'development'
+    }
+  ],
+  dbConnectionTypes: [
+    {
+      value: 'excelsheet', label: 'Excel-sheets on NetShare'
+    },
+    {
+      value: 'oracle', label: 'Oracle'
+    },
+    {
+      value: 'sqlserver', label: 'SQL Server'
+    }
+  ],
+  queryTimePeriods: [
+    { value: 'D', label: 'Days' },
+    { value: 'W', label: 'Weeks' },
+    { value: 'M', label: 'Months' },
+    { value: 'Q', label: 'Quarters' },
+    { value: 'Y', label: 'Yearly' }
+  ],
+  extractFiletypes: [
+    { value: 'csv', label: 'CSV' },
+    { value: 'json', label: 'JSON' },
+    { value: 'xml', label: 'XML' }
+  ],
+  userRoles: {
+    super_admin: {
+      key: 'super_admin',
+      name: 'Super Admin',
+      extractCategory: ['epm', 'odata', 'swms'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: true,
+          updateConfigView: true,
+          userListView: true,
+          updateUserView: true
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: true,
+        },
+        userListView: {
+          showNewUserButton: true,
+          showUpdateButton: true,
+        },
+        updateUserView: {
+          showDeleteUser: true
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: true,
+          showDivitionList: true,
+          showNameDescFields: true,
+          showGeneratedPM: true,
+
+          showDeleteButton: true,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: true,
+          showExecutionHistorySection: true,
+          showExtractResultSection: true
+        }
+      }
+    },
+    epm_admin: {
+      key: 'epm_admin',
+      name: 'EPM Admin',
+      extractCategory: ['epm'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: true,
+          updateConfigView: true,
+          userListView: true,
+          updateUserView: true
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: true,
+        },
+        userListView: {
+          showNewUserButton: true,
+          showUpdateButton: true,
+        },
+        updateUserView: {
+          showDeleteUser: true
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: true,
+          showDivitionList: true,
+          showNameDescFields: true,
+          showGeneratedPM: true,
+
+          showDeleteButton: true,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: true,
+          showExecutionHistorySection: true,
+          showExtractResultSection: true
+        }
+      }
+    },
+    division_admin: {
+      key: 'division_admin',
+      name: 'Division Admin',
+      extractCategory: ['epm', 'odata'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: true,
+          updateConfigView: true,
+          userListView: true,
+          updateUserView: true
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: true,
+        },
+        userListView: {
+          showNewUserButton: true,
+          showUpdateButton: true,
+        },
+        updateUserView: {
+          showDeleteUser: true
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: true,
+          showDivitionList: true,
+          showNameDescFields: true,
+          showGeneratedPM: true,
+
+          showDeleteButton: true,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: false,
+          showExecutionHistorySection: false,
+          showExtractResultSection: true
+        }
+      }
+    },
+    division_analyst: {
+      key: 'division_analyst',
+      name: 'Division Analyst',
+      extractCategory: ['epm', 'odata'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: false,
+          updateConfigView: true,
+          userListView: false,
+          updateUserView: false
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: false,
+        },
+        userListView: {
+          showNewUserButton: false,
+          showUpdateButton: false,
+        },
+        updateUserView: {
+          showDeleteUser: false
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: false,
+          showDivitionList: false,
+          showNameDescFields: false,
+          showGeneratedPM: false,
+
+          showDeleteButton: false,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: false,
+          showExecutionHistorySection: false,
+          showExtractResultSection: true
+        }
+      }
+    },
+    odata_admin: {
+      key: 'odata_admin',
+      name: 'OpenData Admin',
+      extractCategory: ['odata'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: true,
+          updateConfigView: true,
+          userListView: true,
+          updateUserView: true
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: true,
+        },
+        userListView: {
+          showNewUserButton: true,
+          showUpdateButton: true,
+        },
+        updateUserView: {
+          showDeleteUser: true
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: true,
+          showDivitionList: true,
+          showNameDescFields: true,
+          showGeneratedPM: true,
+
+          showDeleteButton: true,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: true,
+          showExecutionHistorySection: true,
+          showExtractResultSection: true
+        }
+      }
+    },
+    swms_admin: {
+      key: 'swms_admin',
+      name: 'SWMS Admin',
+      extractCategory: ['swms'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: true,
+          updateConfigView: true,
+          userListView: true,
+          updateUserView: true
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: true,
+        },
+        userListView: {
+          showNewUserButton: true,
+          showUpdateButton: true,
+        },
+        updateUserView: {
+          showDeleteUser: true
+        },
+        newConfigView: {
+          // New configuration Page
+          showCategoryList: true,
+          showDivitionList: false,
+          showNameDescFields: true,
+          showGeneratedPM: true,
+
+          showDeleteButton: true,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: false,
+          showExecutionHistorySection: false,
+          showExtractResultSection: true
+        }
+      }
+    },
+    swms_analyst: {
+      key: 'swms_analyst',
+      name: 'SWMS Analyst',
+      extractCategory: ['swms'],
+      roles: {
+        views: {
+          configListView: true,
+          newConfigView: false,
+          updateConfigView: true,
+          userListView: false,
+          updateUserView: false
+        },
+        // ConfigurationList
+        configListView: {
+          showConfigButton: true,
+          showNewConfigButton: false,
+        },
+        userListView: {
+          showNewUserButton: false,
+          showUpdateButton: false,
+        },
+        updateUserView: {
+          showDeleteUser: false
+        },
+        newConfigView: {
+
+          // New configuration Page
+          showCategoryList: false,
+          showDivitionList: false,
+          showNameDescFields: false,
+          showGeneratedPM: false,
+
+          showDeleteButton: false,
+          showSaveButton: true,
+
+          // Configuration sections
+          showDescSection: true,
+          showConnectionSection: true,
+          showQueryStmtSection: true,
+          showScheduleSection: false,
+          showExecutionHistorySection: false,
+          showExtractResultSection: true
+        }
+      }
+    }
+  }
+};
+
+
+
+    var enc = window.btoa(JSON.stringify(users));
+
+    var res = enc;
+    document.getElementById("demo").innerHTML =  res;
+    if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById("demo"));
+        range.select();
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(document.getElementById("demo"));
+        window.getSelection().addRange(range);
+    }
+    document.execCommand("copy");
+
+}
+</script>
+
+</body>
+</html>

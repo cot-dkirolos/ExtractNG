@@ -1,0 +1,344 @@
+<section id="content-top">
+
+  <form novalidate #f="ngForm" (submit)="saveExtract(f.valid,f.value)">
+    <p-tabView>
+      <p-tabPanel header="Extract Details">
+        <!--<p-header>
+
+                <span>EPM Extracts</span>
+                <div style="float:right">
+                  <button pButton type="button" label="New" icon="fa-plus"  (click)="navigateToNew('epm')" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
+                </div>
+              </p-header>-->
+        <p class="text-right">
+          <span id='savedMsg'></span>
+          <button pButton icon="fa-floppy-o" id='saveBtn' style="margin: 0;" label="Save" type="submit" [disabled]="sharedService.block"></button>
+          <button pButton icon="fa-ban" id='cancelBtn' style="margin: 0;" label="Cancel" type="button" [routerLink]="['/home']"></button>
+        </p>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Extract Meta-data</h3>
+          </div>
+
+          <div class="panel-body">
+
+            <div class="row" [hidden]="true">
+              <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                  <label for="guidField">ID</label>
+                  <input type="text" pInputText [ngModel]="conf?.id" [readonly]="true" (ngModelChange)="conf ? conf.id=$event : null" name="id" class="form-control"
+                    id="guidField" placeholder="ID" [required]="true" #id="ngModel" >
+                <span class="badResultCode"  [hidden]="id.valid || (id.pristine && !f.submitted)">
+                  ID is required
+                </span>
+                </div>
+              </div>
+              </div>
+            <div class="row">
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="sourceCategory">Source Category</label>
+                  <p-dropdown [options]="sourceCategories"
+                  [(ngModel)]="conf.sourceCategory"
+                   name="sourceCategory"
+                   inputId="sourceCategory"
+                    [style]="{'width':'100%'}">
+                  </p-dropdown>
+                </div>
+              </div>
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="divisionName">Division</label>
+                  <p-dropdown [options]="divisions" [(ngModel)]="conf.group" name="group" inputId="divisionName" [required]="true" [style]="{'width':'100%'}"></p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="row" [hidden]="true">
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="type">Type</label>
+                  <p-dropdown [options]="types" [(ngModel)]="conf.type" name="type" inputId="type" [required]="true" [style]="{'width':'100%'}"></p-dropdown>
+                </div>
+              </div>
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="confStatus">Status</label>
+                  <p-dropdown [options]="statuses" [(ngModel)]="conf.status" name="status" inputId="confStatus" [required]="true" [style]="{'width':'100%'}"></p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="idField">Extract ID</label>
+                  <input type="text" pInputText [ngModel]="conf?.pmID" (ngModelChange)="conf ? conf.pmID=$event : null" name="pmID" class="form-control"
+                    id="idField" placeholder="Extract ID" [required]="true" #pmID="ngModel" >
+                <span class="badResultCode"  [hidden]="pmID.valid || (pmID.pristine && !f.submitted)">
+                  Extract ID is required
+                </span>
+                </div>
+              </div>
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="nameField">Extract Name</label>
+                  <input pInputText type="text" class="form-control" id="nameField" placeholder="Extract Name" name="name" [ngModel]="conf?.name"
+                    (ngModelChange)="conf ? conf.name=$event : null" required #name="ngModel" >
+                <span class="badResultCode"  [hidden]="name.valid || (name.pristine && !f.submitted)">
+                  Extract Name is required
+                </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="form-group">
+                  <label for="descField">Description</label>
+                  <textarea id="descField" required style="display:block; width:100%; height:70px;" [ngModel]="conf?.description" #description="ngModel"  name="description" (ngModelChange)="conf ? conf.description=$event : null"></textarea>
+
+                <span class="badResultCode"  [hidden]="description.valid || (description.pristine && !f.submitted)">
+                  Description is required
+                </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!--<div class="panel panel-default" *ngIf="configurationType && configurationType == 'odata'">-->
+        <div [hidden]="!conf.sourceCategory || conf.sourceCategory !== 'odata'">
+          <div class="panel panel-default">
+
+            <div class="panel-heading">
+              <h3 class="panel-title">Schedule Configuration</h3>
+            </div>
+
+            <div class="panel-body">
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="interval">Interval</label>
+                    <!--<p-inputMask  [ngModel]="conf?.interval" (ngModelChange)="conf ? conf.interval=$event : null" mask="9999"  name="interval" inputId="interval"></p-inputMask>-->
+                    <input type="text" pInputText [maxlength]="4" (keypress)="numbersOnly($event)" [ngModel]="conf?.interval" (ngModelChange)="conf ? conf.interval=$event : null"
+                      name="interval" class="form-control" id="interval" placeholder="Interval">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="expiryTime">Expiry Time</label>
+                    <input pInputText type="text" class="form-control" id="expiryTime" placeholder="yyyy-MM-ddThh:mm:ss" name="expiryTime" [ngModel]="conf?.expiryTime" (ngModelChange)="conf ? conf.expiryTime=$event : null">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="panel panel-default" *ngIf="conf.sourceCategory && conf.sourceCategory == 'odata'">
+            <div class="panel-heading">
+              <h3 class="panel-title">OpenData Configuration</h3>
+            </div>
+
+            <div class="panel-body">
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="dataset">Dataset Name</label>
+                    <input type="text" pInputText  [ngModel]="conf?.dataset" (ngModelChange)="conf ? conf.dataset=$event : null"
+                      name="dataset" #dataset="ngModel" class="form-control" id="dataset" placeholder="Dataset Name" [required]="conf?.sourceCategory === 'odata'">
+                <span class="badResultCode" [hidden]="dataset.valid || (dataset.pristine && !f.submitted)">
+                  Dataset Name is required
+                </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="oDataUrlField">URL</label>
+                    <!--[ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.dataset ? conf.dataset : '') : ''"-->
+                    <input pInputText type="text" class="form-control" id="oDataUrlField" placeholder="" #url="ngModel" name="url" [readonly]="conf.connection.type"
+                      (ngModelChange)="conf ? conf.url=$event : null" [ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.dataset ? conf.dataset : '') : ''"
+                      [required]="!conf.connection.type || conf.connection.type == ''">
+                      <span class="badResultCode" [hidden]="(url.valid || url.disabled) || (url.pristine && !f.submitted)">
+                  URL is required
+                </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default" ngModelGroup="connection">
+          <div class="panel-heading">
+            <h3 class="panel-title">Connection<span id='conTitle'></span></h3>
+          </div>
+
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="form-group">
+                  <label for="connectionType">Connection Type</label>
+
+                  <p-dropdown [options]="connectionTypes" (onChange)="conTypeChange($event,$event.value)" [ngModel]="conf?.connection.type"
+                    name="type" (ngModelChange)="conf ? conf.connection.type=$event : null" inputId="connectionType" [style]="{'width':'100%'}"></p-dropdown>
+                </div>
+              </div>
+            </div>
+
+            <div id="connectionInfo" *ngIf="conf.connection && conf.connection.type && conf.connection.type != ''">
+              <div class="row">
+                <div [ngClass]="conf?.connection.type == 'excelsheet' ? 'col-xs-12' : 'col-xs-4'">
+                  <div class="form-group">
+                    <label for="connectionHostname">{{conf?.connection.type == 'excelsheet' ? 'Folder' : 'Host Name'}}</label>
+                    <input id="connectionHostname" name="hostName" type="text" class="form-control" [ngModel]="conf?.connection.hostName" (ngModelChange)="conf ? conf.connection.hostName=$event : null">
+                  </div>
+                </div>
+
+                <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet'">
+                  <div class="form-group">
+                    <label for="connectionPort">Port</label>
+                    <input id="connectionPort" name="port" type="text" class="form-control" [ngModel]="conf?.connection.port" (ngModelChange)="conf ? conf.connection.port=$event : null">
+                  </div>
+                </div>
+
+                <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet'">
+                  <div class="form-group">
+                    <label for="connectionDB">{{conf?.connection.type == 'sqlserver' ? 'Database Name' : 'Service Name'}}</label>
+                    <input id="connectionDB" name="serviceName" type="text" class="form-control" [ngModel]="conf?.connection.serviceName" (ngModelChange)="conf ? conf.connection.serviceName=$event : null">
+                  </div>
+                </div>
+              </div>
+
+              <!-- COMMON -->
+
+              <div class="row">
+                <div class="col-xs-4">
+                  <div class="form-group">
+                    <label for="user">User</label>
+                    <input id="user" name="user" type="text" class="form-control" size="35" [ngModel]="conf?.connection.user" (ngModelChange)="conf ? conf.connection.user=$event : null">
+                  </div>
+                </div>
+
+                <div class="col-xs-4">
+                  <div class="form-group">
+                    <label for="pwd">Password</label>
+                    <input type="password" id='pwd' name="password" class="form-control" size="35" [ngModel]="conf?.connection.password" (ngModelChange)="conf ? conf.connection.password=$event : null">
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <button [disabled]="sharedService.block" type="button" id="chk" class="btn btn-default" (click)="validateURL()" style="margin: 0;">Test Connection</button>
+                    <span id="connTestResult"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+<div ngModelGroup="query">
+        <div class="panel panel-default" [hidden]="!conf.connection || !conf.connection.type || conf.connection.type == ''">
+          <div class="panel-heading">
+            <h3 class="panel-title">Query</h3>
+          </div>
+
+
+
+          <div id='query'>
+
+            <!--<l-ace-editor  [options]="aceOption" name="editValue"
+                   [ngModel]="conf?.query"
+                   (ngModelChange)="conf ? conf.query=$event : null"></l-ace-editor>-->
+              <ace-editor
+                [(ngModel)]="conf?.query.sql"
+                [autoUpdateContent]="true"
+                [theme]="'eclipse'"
+                name="sql"
+                [options]="{fontFamily: 'courier', fontSize: '12pt', minLines: 10, maxLines: 'Infinity'}"
+                [mode]="'sql'"
+                [readOnly]="false"
+                style="min-height: 200px; width:100%; overflow: auto;">
+              </ace-editor>
+
+
+            <!--<app-ace-editor #editor style="height:150px;" [mode]="mode" [options]="aceOption"  ></app-ace-editor>-->
+          </div>
+
+          <div class="panel-footer">
+            &nbsp;
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">Extract Data</h3>
+          </div>
+
+          <div class="panel-body">
+            <div class="row" [hidden]="!conf.connection || !conf.connection.type && conf.connection.type == ''">
+              <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                  <label for="timePeriod">Period</label>
+                  <p-dropdown [options]="periods" [(ngModel)]="conf.query.timePeriod" name="timePeriod" inputId="timePeriod" [style]="{'width':'100%'}"></p-dropdown>
+                  <!--<Select id="timePeriod" class="form-control"><option value="M">Months</option><option value="Q">Quarters</option><option value="D">Days</option></Select>-->
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                  <label for="fromTime">Start</label>
+                  <!--<p-calendar  inputId="startTime" [style]="{'width':'100%'}"></p-calendar>-->
+                  <input pInputText id='fromTime' class="form-control" [ngModel]="conf?.query.fromTime" (ngModelChange)="conf?.query.fromTime ? conf?.query.fromTime=$event : null"
+                    placeholder="Start Date" name="fromTime" size=8>
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                  <label for="toTime">End</label>
+                  <!--<p-calendar  inputId="endTime" [style]="{'width':'100%'}"></p-calendar>-->
+                  <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" (ngModelChange)="conf?.query.toTime ? conf?.query.toTime=$event : null"
+                    name="toTime" placeholder="End Date" size=8>
+                </div>
+              </div>
+
+
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <div class="form-group">
+                  <button [disabled]="sharedService.block" id='queryButton' (click)="query()" class="btn btn-default" type='button' style="margin: 0;">Try Extract</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <pre id='resultSQL' style="margin-bottom: 0;"></pre>
+        </div>
+</div>
+        <div id="resultTitle"></div>
+        <div id="result"></div>
+
+        <!--<p class="text-right">
+				<button class="btn btn-success" style="margin: 0;"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save</button>
+				<button class="btn btn-danger" style="margin: 0;"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
+			</p>-->
+      </p-tabPanel>
+      <!--<p-tabPanel header="Schedule" leftIcon="fa-calendar">
+
+    </p-tabPanel>-->
+    </p-tabView>
+  </form>
+</section>

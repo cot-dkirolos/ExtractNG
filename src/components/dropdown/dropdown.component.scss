@@ -1,0 +1,122 @@
+// component css goes here
+.ui-dropdown {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.ui-dropdown .ui-dropdown-trigger {
+    border-right: none;
+    border-top: none;
+    border-bottom: none;
+    cursor: pointer;
+    width: 1.5em;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 0 .25em;
+}
+
+.ui-dropdown .ui-dropdown-trigger .fa {
+    margin-top: .4em;
+    margin-left: -.125em;
+}
+
+.ui-dropdown .ui-dropdown-label  {
+    display: block;
+    border: none;
+    white-space: nowrap;
+    overflow: hidden;
+    font-weight: normal;
+    width: 100%;
+    padding-right: 1.5em;
+}
+
+.ui-dropdown .ui-dropdown-item-empty,
+.ui-dropdown .ui-dropdown-label-empty {
+    text-indent: -9999px;
+}
+
+.ui-dropdown.ui-state-disabled .ui-dropdown-trigger,
+.ui-dropdown.ui-state-disabled .ui-dropdown-label {
+    cursor: default;
+}
+
+.ui-dropdown label.ui-dropdown-label  {
+    cursor: pointer;
+}
+
+.ui-dropdown input.ui-dropdown-label  {
+    cursor: default;
+}
+
+.ui-dropdown .ui-dropdown-panel {
+    min-width: 100%;
+}
+
+.ui-dropdown-panel {
+    position: absolute;
+    height: auto;
+    // height: 34px;
+}
+
+.ui-dropdown-panel .ui-dropdown-items-wrapper {
+    overflow: auto;
+    border-color: #0275d8;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 3px rgba(2, 117, 216,1);
+}
+
+.ui-dropdown-panel .ui-dropdown-item {
+    font-weight: normal;
+    border: 0 none;
+    cursor: pointer;
+    margin: 1px 0;
+    padding: .125em .25em;
+    text-align: left;
+}
+
+.ui-dropdown-panel .ui-dropdown-item-group {
+    font-weight: bold;
+}
+
+.ui-dropdown-panel .ui-dropdown-list {
+    padding: 0.4em;
+    border: 0 none;
+}
+
+.ui-dropdown-panel .ui-dropdown-filter {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 1.5em;
+}
+
+.ui-dropdown-panel .ui-dropdown-filter-container {
+    position: relative;
+    margin: 0;
+    padding: 0.4em;
+    display: inline-block;
+    width:100%;
+}
+
+.ui-dropdown-panel .ui-dropdown-filter-container .fa {
+    position: absolute;
+    top: .8em;
+    right: 1em;
+}
+
+/** Dropdown **/
+.ui-fluid .ui-dropdown {
+    width: 100%;
+}
+
+body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-trigger, body .ui-dropdown.ui-state-focus .ui-dropdown-trigger, body .ui-dropdown.ui-state-focus .ui-dropdown-label, body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-label {
+    border-radius: 3px;
+    -moz-border-top-left-radius: 0;
+    border-top-left-radius: 0;
+    -moz-border-bottom-left-radius: 0;
+    border-bottom-left-radius: 0;
+     background-color: #fff !important;
+}

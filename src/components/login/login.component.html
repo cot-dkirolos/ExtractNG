@@ -1,0 +1,25 @@
+<!--component html goes here -->
+<section id="loginSection">
+	<div>
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h2 class="panel-title">Sign In</h2>
+			</div>
+
+			<div class="panel-body" id="loginModalBody">
+				<form  [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
+
+					<div class="form-group">
+						<label for="extractUsername">Username</label>
+						<input #username type="text" class="form-control" id="extractUsername"  placeholder="Username" formControlName="username"  pInputText >
+					</div>
+					<div class="form-group">
+						<label for="extractPassword">Password</label>
+						<input type="password" class="form-control" id="extractPassword" formControlName="password"  placeholder="Password">
+					</div>
+					<button pButton type="submit" style="margin:0" [disabled]="sharedService.block" label="Submit"></button>					<!--<a href="?content=02_select.html" class="btn btn-default">Submit</a>-->
+				</form>
+			</div>
+		</div>
+	</div>
+</section>

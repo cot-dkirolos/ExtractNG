@@ -1,0 +1,71 @@
+<section id="content-top">
+
+  <form novalidate #f="ngForm" (submit)="saveUser(f.valid,f.value)">
+    <p-tabView>
+      <p-tabPanel header="New User">
+
+        <p class="text-right">
+          <span id='savedMsg'></span>
+          <button pButton icon="fa-floppy-o" id='saveBtn' style="margin: 0;" label="Save" type="submit" [disabled]="sharedService.block"></button>
+          <button pButton icon="fa-ban" id='cancelBtn' style="margin: 0;" label="Cancel" type="button" [routerLink]="['/home']"></button>
+        </p>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">User Details</h3>
+          </div>
+
+          <div class="panel-body">
+
+            <div class="row">
+
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="userIDField">User ID</label>
+                  <input type="text" pInputText [ngModel]="newUser?.userID" (ngModelChange)="newUser ? newUser.userID=$event : null" name="userID" class="form-control"
+                    id="userIDField" placeholder="User ID" [required]="true" #userID="ngModel" >
+                <span class="badResultCode"  [hidden]="userID.valid || (userID.pristine && !f.submitted)">
+                  User ID is required
+                </span>
+                </div>
+              </div>
+
+              <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                  <label for="userNameField">Name</label>
+                  <input type="text" pInputText [ngModel]="newUser?.name" (ngModelChange)="newUser ? newUser.name=$event : null" name="name" class="form-control"
+                    id="userNameField" placeholder="Name" [required]="true" #name="ngModel" >
+                <span class="badResultCode"  [hidden]="name.valid || (name.pristine && !f.submitted)">
+                  Name is required
+                </span>
+                </div>
+              </div>
+
+              </div>
+
+            <div class="row">
+              <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                  <label for="userGroup">UserGroup</label>
+                  <p-dropdown [options]="userGroups"
+                  [filter]="true"
+                  [(ngModel)]="newUser.groupID"
+                   name="groupID"
+                   inputId="userGroup"
+                    [style]="{'width':'100%'}">
+                  </p-dropdown>
+                </div>
+              </div>
+            </div>
+
+
+
+        </div>
+        </div>
+
+
+
+      </p-tabPanel>
+    </p-tabView>
+  </form>
+</section>

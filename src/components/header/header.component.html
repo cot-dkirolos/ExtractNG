@@ -1,0 +1,74 @@
+<!--component html goes here -->
+
+
+    <div id="cot-template-page">
+      <div class="r1">
+        <!-- CORPORATE APPLICATION HEADER -->
+        <section id="cot-header">
+          <div class="blue">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-xs-12 col-sm-3 hidden-print">
+                  <div id="logo">
+                    <a href="//www1.toronto.ca/wps/portal/contentonly?vgnextoid=8e79f9be8db1c310VgnVCM1000006cd60f89RCRD"><img src="assets/img/citylogo.svg" alt="City of Toronto"></a>
+                  </div>
+                </div>
+                <div class="col-xs-12 visible-print">
+                  <div class="col-xs-6"><img alt="City of Toronto" src="assets/img/citylogo_print.gif"></div>
+                  <div class="col-xs-6">
+                    <p class="pull-right">Web page Printout</p>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-sm-9 hidden-print">
+                  <!-- <form class="siteSearch" role="search" action="http://search.toronto.ca/search" method="get"> -->
+                  <link rel="stylesheet" href="//www1.toronto.ca/wcmAsset/gsasearch/css/search.css" type="text/css">
+                  <form id="siteSearchGSA" class="form-inline" role="search" action="http://search.toronto.ca/search" method="get" onsubmit="dcsMultiTrack('WT.dl','26','WT.ti','','WT.search-term',document.getElementById('q').value);">
+                    <fieldset>
+                      <legend>&nbsp; <span class="hide">City of Toronto website search</span></legend><label for="q" class="hide">Search:</label>
+                      <div class="input-group"><input type="text" class="form-control ui-autocomplete-input" title="Enter your search request" name="q"
+                          id="q" value="" required="" autocomplete="off"> <span class="input-group-btn"><button class="btn btn-default" type="submit">Search</button></span></div>
+                      <input type="hidden" name="sort" value="date:D:L:d1"> <input type="hidden" name="output" value="xml_no_dtd">                      <input type="hidden" name="ie" value="UTF-8">
+                      <input type="hidden" name="oe" value="UTF-8"> <input type="hidden" name="mss" value="search">
+                      <input id="sf_client" type="hidden" name="client" value="Toronto"> <input id="sf_proxystylesheet" type="hidden"
+                        name="proxystylesheet" value="_common_"> <input id="sf_site" type="hidden" name="site" value="TorontoWebsite">                      </fieldset>
+                  </form>
+                  <div id="fontsizer" class="hidden-print hidden-xs hidden-sm col-md-2">
+                    <div class="btn-group" style="margin-left: 5px"><button id="increaseFontSize" title="Increase font size" type="button" class="btn btn-default" onclick="increaseFontSize();"><span class="glyphicon glyphicon-font"></span> <span class="glyphicon glyphicon-plus"></span> <span class="sr-only">Increase Font Size</span></button>                      <button id="decreaseFontSize" title="Decrease font size" type="button" class="btn btn-default" onclick="decreaseFontSize();"><span class="glyphicon glyphicon glyphicon-font"></span> <span class="glyphicon glyphicon-minus"></span> <span class="sr-only">Decrease Font Size</span></button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- BREADCRUMB -->
+        <section class="container-fluid" id="app-breadcrumb" style="display: flex;">
+          <div class="row">
+            <div class="hidden-xs hidden-print col-xs-auto">
+              <div id="breadcrumb-bar">
+                <ol class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+                  <li><a href="http://www.toronto.ca"><span class="glyphicon glyphicon-home" style="margin-right: 5px;"></span>City of Toronto</a></li>
+                  <li>Extract Tool</li>
+                </ol>
+              </div>
+            </div>
+            <div class="hidden-print col-xs-auto">
+              <div id="app-utility">
+                <p id="utility" *ngIf="fullName" ><span id="userFullName">{{fullName}} - </span> <a (click)="authService.logout()" id="signoutUtil">Sign Out</a></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <!-- APPLICATION TITLE -->
+      <header id="app-header">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-xs-12 col-sm-10 col-md-11">
+              <h1>Extract Tool</h1>
+            </div>
+            <div class="col-xs-12 col-sm-2 col-md-1 securesite"><img src="assets/img/lock.png" title="You are in a toronto.ca secure site." alt="An icon of a Lock denoting that this is a secure website."></div>
+          </div>
+        </div>
+      </header>
+
+    </div>

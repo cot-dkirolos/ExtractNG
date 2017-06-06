@@ -1,0 +1,270 @@
+<!--component html goes here -->
+<div id="app-content-full" class="col-xs-12">
+  <div class="row">
+    <section id="app-content-top" class="col-xs-12">
+      <div></div>
+    </section>
+    <section id="app-content-left" class="col-xs-12">
+      <div>
+        <p-tabView>
+          <p-tabPanel header="EPM" leftIcon="fa-bar-chart">
+            <p-dataTable #dt [value]="divisions" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
+              <p-header>
+
+                <span>EPM Extracts</span>
+                <div style="float:right">
+                  <button pButton type="button"  class="ui-button-success" label="New" icon="fa-plus" (click)="navigateToNew('epm')" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
+                </div>
+              </p-header>
+              <p-column field="id" [sortable]="true" [filter]="true" [style]="{'width':'145px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="idFilter">ID</label>
+                  <input type="text" id="idFilter" (keyup)="dt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter ID"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="name" [sortable]="true" [filter]="true">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="nameFilter">Name</label>
+                  <input type="text" id="nameFilter" (keyup)="dt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Name"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="description" [sortable]="true" [filter]="true">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="descriptionFilter">Description</label>
+                  <input type="text" id="descriptionFilter" (keyup)="dt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Description"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="division" [sortable]="true" [filter]="true" [style]="{'width':'215px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="divisionFilter">Division</label>
+                  <!--<p-dropdown [options]="divisionsList" id="divisionFilter" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value,col.field,col.filterMatchMode)" styleClass="ui-column-filter"></p-dropdown>-->
+                  <input type="text" id="divisionFilter" (keyup)="dt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Divisions"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column header="Action" styleClass="col-button" [style]="{'text-align':'center'}">
+                <ng-template let-division="rowData" pTemplate="body">
+                  <button type="button" pButton icon="fa-tasks" class="ui-button-success" (click)="navigateToModify(division.group,division.id)" label="Configure"></button>
+                </ng-template>
+              </p-column>
+            </p-dataTable>
+          </p-tabPanel>
+
+
+          <p-tabPanel header="OpenData" leftIcon="fa-database">
+
+            <p-dataTable #odt [value]="divisionsOData" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
+              <p-header>
+
+                <span>Open Data Extracts</span>
+                <div style="float:right">
+                  <button pButton type="button" label="New"  class="ui-button-success" icon="fa-plus" (click)="navigateToNew('odata')" style="margin: 0px; margin-top: -3px;padding: 0;"></button>                  </div>
+
+              </p-header>
+
+              <p-column field="id" [sortable]="true" [filter]="true" [style]="{'width':'145px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="ODidFilter">ID</label>
+                  <input type="text" id="ODidFilter" (keyup)="odt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter ID"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="name" [sortable]="true" [filter]="true">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="ODnameFilter">Name</label>
+                  <input type="text" id="ODnameFilter" (keyup)="odt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Name"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="description" [sortable]="true" [filter]="true">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="ODdescriptionFilter">Description</label>
+                  <input type="text" id="ODdescriptionFilter" (keyup)="odt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Description"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="division" [sortable]="true" filterMatchMode="contains" [filter]="true" [style]="{'width':'215px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="ODdivisionFilter">Division</label>
+                  <!--<p-dropdown [options]="divisionsList" id="divisionFilter" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value,col.field,col.filterMatchMode)" styleClass="ui-column-filter"></p-dropdown>-->
+                  <input type="text" id="ODdivisionFilter" (keyup)="odt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Divisions"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column header="Action" styleClass="col-button" [style]="{'text-align':'center'}">
+                <ng-template let-division="rowData" pTemplate="body">
+                  <button type="button"  class="ui-button-success"  pButton icon="fa-tasks" style="min-width:115px" (click)="navigateToModify(division.group,division.id)"
+                    label="Configure"></button>
+                  <button type="button"  class="ui-button-success"  [disabled]="isConfigSchedulled(division.id)" pButton (click)="newScheduleExtract(division)" style="min-width:115px;margin-top: 5px;" icon="fa-calendar" label="Schedule"></button>
+                </ng-template>
+              </p-column>
+            </p-dataTable>
+          </p-tabPanel>
+
+
+          <p-tabPanel header="Scheduled Extracts" leftIcon="fa-calendar">
+            <p-dataTable #sdt [value]="scheduledList" [responsive]="true"  role="region"  id="scheduleDT" aria-live="polite"
+            [(selection)]="selectedSchedule" >
+              <p-header>
+
+                <span>Extracts</span>
+                <div style="float:right">
+                  <!--<button pButton type="button" label="New" icon="fa-plus" (click)="navigateToNew('odata')" style="margin: 0px; margin-top: -3px;padding: 0;"></button>                  -->
+                </div>
+
+              </p-header>
+
+              <p-column field="id" [sortable]="true" [filter]="true" [style]="{'width':'145px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schIDFilter">ID</label>
+                  <input type="text" id="schID" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter ID"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="name" [sortable]="true" [filter]="true">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schNameFilter">Name</label>
+                  <input type="text" id="schNameFilter" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Name"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="division" [sortable]="true" filterMatchMode="contains" [filter]="true" [style]="{'width':'auto'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schDivisionFilter">Division</label>
+                  <input type="text" id="schDivisionFilter" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Divisions"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="interval" [sortable]="true" [filter]="true" [style]="{'width':'140px'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schIntervalFilter">Interval</label>
+                  <input type="text" id="schIntervalFilter" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Interval"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column field="expiryTime" [sortable]="true" filterMatchMode="contains" [filter]="true" [style]="{'width':'auto'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schExpiryFilter">Expiry Time</label>
+                  <input type="text" id="schExpiryFilter" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Expiry Time"
+                    pInputText>
+                </ng-template>
+                 <ng-template let-sch="rowData" pTemplate="body">
+                   {{sch.expiryTime|date:'yyyyMMdd hh:mm:ss'}}
+                </ng-template>
+              </p-column>
+              <p-column field="status" [sortable]="true" filterMatchMode="contains" [filter]="true" [style]="{'width':'auto'}">
+                <ng-template pTemplate="filter" let-col>
+                  <label for="schStatusFilter">Status</label>
+                  <input type="text" id="schStatusFilter" (keyup)="sdt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Filter Status"
+                    pInputText>
+                </ng-template>
+              </p-column>
+              <p-column header="Action" styleClass="col-button" [style]="{'text-align':'center'}">
+                <ng-template let-sch="rowData" pTemplate="body">
+                  <button type="button" pButton icon="fa-tasks" class="ui-button-success"  style="min-width:115px" (click)="configureSchedule(sch)"
+                    label="Configure"></button>
+                </ng-template>
+              </p-column>
+            </p-dataTable>
+          </p-tabPanel>
+        </p-tabView>
+
+      </div>
+    </section>
+
+    <section id="app-content-bottom" class="col-xs-12">
+      <div>
+        <p-dialog header="Schedule Extract" width="600" (onShow)="onShow($event)" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true">
+
+          <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="schedule">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Extract Details</h3>
+              </div>
+
+              <div class="panel-body">
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="extractId">Extract ID</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.id" disabled="true" name="schExtID" pInputText id="extractId"
+                    /></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="extractName">Extract Name</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.name" disabled="true" name="schExtName" pInputText id="extractName"
+                    /></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schExtDivision">Extract Division</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.division" disabled="true" name="schExtDivision" pInputText
+                      id="schExtDivision" /></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">Schedule Details</h3>
+              </div>
+
+              <div class="panel-body">
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schInterval">Interval</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.interval" name="schInterval" pInputText id="schInterval"
+                    /></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schexpiryTime">Expiry Time</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12">
+                    <input [(ngModel)]="schedule.expiryTime" name="schexpiryTime" pInputText id="schexpiryTime" />
+
+                    </div>
+                </div>
+
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schStatus">Status</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.status" name="schStatus" pInputText id="schStatus" /></div>
+                </div>
+
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schType">Type</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.type" name="schType" pInputText id="schType" /></div>
+                </div>
+
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-4"><label for="schUrl">URL</label></div>
+                </div>
+                <div class="ui-grid-row">
+                  <div class="ui-grid-col-12"><input [(ngModel)]="schedule.url" name="schUrl" pInputText id="schUrl" /></div>
+                </div>
+              </div>
+            </div>
+
+            <!--<p-calendar  inputId="scheduleTime2"  name="scheduleTime" showTime="true" showSeconds="true"   [style]="{'width':'100%'}" placeholder="Schedule Time"  dateFormat="yymmdd"></p-calendar>-->
+
+          </div>
+          <p-footer>
+            <div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix">
+              <button type="button" pButton icon="fa-check"  class="ui-button-success"  (click)="save()" label="Save"></button>
+            </div>
+          </p-footer>
+        </p-dialog>
+      </div>
+    </section>
+  </div>
+</div>

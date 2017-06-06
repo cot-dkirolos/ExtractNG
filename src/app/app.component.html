@@ -1,3 +1,15 @@
-<h1>
-  {{title}}
-</h1>
+<app-header-component></app-header-component>
+<p-growl [(value)]="sharedService.msgs"></p-growl>
+      <!-- CONTENT NO LEFT NAV -->
+      <section id="app-content" class="container-fluid">
+        <div class="row">
+          <main role="main" id="maincontent" class="col-xs-12">
+          <!--<main role="main" class="col-xs-12">-->
+            <div class="row">
+              <router-outlet></router-outlet>
+            </div>
+          </main>
+        </div>
+      </section>
+
+	<app-footer-component></app-footer-component>
