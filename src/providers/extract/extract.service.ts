@@ -1,6 +1,4 @@
 import { AppConfig } from './../app-config/app-config.service';
-import { appACL } from './../../model/ACL';
-import { appConfig } from './../../model/AppConfig';
 import { HttpService } from './../http/http.service';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Request, Response, Headers, RequestOptions } from '@angular/http';
@@ -54,6 +52,7 @@ export class ExtractService {
       }) // ...and calling .json() on the response to return data
       .catch((error: any) => Observable.throw(error)); // ...errors if any
   }
+
   updateExtractConf(qualifiedName, data) {
 
     const headers = new Headers();
@@ -68,6 +67,7 @@ export class ExtractService {
       }) // ...and calling .json() on the response to return data
       .catch((error: any) => Observable.throw(error)); // ...errors if any
   }
+
   deleteExtractConf(qualifiedName) {
 
     const headers = new Headers();
@@ -77,6 +77,22 @@ export class ExtractService {
     headers.append('Authorization', `AuthSession ${jQuery.cookie('extract.sid')}`);
 
     return this.httpService.delete(this.setConfUrl + `('${qualifiedName}')`, { headers: headers })
+      .map((res: Response) => {
+        return res.json();
+      }) // ...and calling .json() on the response to return data
+      .catch((error: any) => Observable.throw(error)); // ...errors if any
+  }
+
+
+  updateUsers(users) {
+
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+
+    headers.append('Authorization', `AuthSession ${jQuery.cookie('extract.sid')}`);
+
+    return this.httpService.put(this.setConfUrl + `('Extract/AppConfig_users/users.json')`, users, { headers: headers })
       .map((res: Response) => {
         return res.json();
       }) // ...and calling .json() on the response to return data

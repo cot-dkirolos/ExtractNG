@@ -1,3 +1,4 @@
+import { SharedService } from './../../providers/shared/shared.service';
 import { ObjectUtils } from './../../providers/utils/object-utils';
 
 
@@ -89,6 +90,8 @@ export class Dropdown implements OnInit, AfterViewInit, AfterContentInit, AfterV
 
   @ContentChildren(PrimeTemplate) templates: QueryList<any>;
 
+  selectId: number;
+
   public itemTemplate: TemplateRef<any>;
 
   selectedOption: SelectItem;
@@ -131,7 +134,9 @@ export class Dropdown implements OnInit, AfterViewInit, AfterContentInit, AfterV
 
   public selectedOptionUpdated: boolean;
 
-  constructor(public el: ElementRef, public domHandler: DomHandler, public renderer: Renderer, private cd: ChangeDetectorRef, public objectUtils: ObjectUtils) { }
+  constructor(private sharedService: SharedService,public el: ElementRef, public domHandler: DomHandler, public renderer: Renderer, private cd: ChangeDetectorRef, public objectUtils: ObjectUtils) {
+    this.selectId = sharedService.getRandomInt(1,100);
+  }
 
   ngAfterContentInit() {
     this.templates.forEach((item) => {

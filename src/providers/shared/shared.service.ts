@@ -13,6 +13,8 @@ export class SharedService {
   breadcrumbItems: BreadcrumbItem[];
   block: boolean;
 
+  public data:any;
+
   public user;
 
   msgs: Message[] = [];
@@ -155,5 +157,15 @@ export class SharedService {
 //         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
 //     }).join(''));
 // }
+
+newObject(object: any) {
+    return object ? JSON.parse(JSON.stringify(object)) : null;
+  }
+
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
 
 }

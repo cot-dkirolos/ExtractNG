@@ -1,3 +1,6 @@
+import { DataTableModule } from './../components/datatable/datatable.component';
+import { PaginatorModule } from './../components/paginator/paginator.component';
+import { UpdateUserPage } from './../pages/update-user/update-user.page';
 import { NewUserPage } from './../pages/new-user/new-user.page';
 import { UpdateConfigPage } from './../pages/update-config/update-config.page';
 import { AppConfig } from './../providers/app-config/app-config.service';
@@ -30,8 +33,8 @@ import { SharedService } from './../providers/index';
 // import { LAceEditorModule } from 'angular2-ace';
 import {
   InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule,
-  InputTextModule, ButtonModule, PanelModule, DataTableModule, SharedModule, MultiSelectModule, TabViewModule,
-  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule
+  InputTextModule, ButtonModule, PanelModule,  SharedModule, MultiSelectModule, TabViewModule,
+  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule
 } from 'primeng/primeng';
 
 export function httpFactory(backend: XHRBackend, options: RequestOptions, router: Router, sharedService: SharedService) {
@@ -54,7 +57,8 @@ export function initConfig(config: AppConfig, httpService: Http) {
     CreateConfigPage,
     UpdateConfigPage,
     ConfigListPage,
-    NewUserPage
+    NewUserPage,
+    UpdateUserPage
   ],
   entryComponents: [
     LoginPage,
@@ -62,7 +66,8 @@ export function initConfig(config: AppConfig, httpService: Http) {
     CreateConfigPage,
     UpdateConfigPage,
     ConfigListPage,
-    NewUserPage
+    NewUserPage,
+    UpdateUserPage
   ],
   imports: [
     AceEditorModule,
@@ -75,7 +80,7 @@ export function initConfig(config: AppConfig, httpService: Http) {
     InputTextModule, ButtonModule,
     InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule, CalendarModule,
     PanelModule, DataTableModule, SharedModule, MultiSelectModule, DropdownModule, TabViewModule,ConfirmDialogModule,
-    GrowlModule,MessagesModule
+    GrowlModule,MessagesModule,PaginatorModule,TooltipModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [AuthenticationService, ExtractService, ObjectUtils,ConfirmationService,

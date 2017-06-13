@@ -1,5 +1,3 @@
-import { appConfig } from './../../model/AppConfig';
-import { users } from './../../model/users';
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
 import { SharedService } from './../../providers/shared/shared.service';
@@ -21,24 +19,42 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   @ViewChild('tabView') tv: TabView;
 
+  loading: boolean;
+
   activeIndex: number;
 
   configurationList: any;
   usersList: any;
 
+  items: MenuItem[];
+
   // user: any;
 
   constructor(private extractService: ExtractService, private router: Router, public sharedService: SharedService, public appConfig: AppConfig) {
+    this.items = [
+      {
+        label: 'Configure', icon: 'fa-tasks', command: (event) => {
+          this.navigateToModify(event);
+        }
+      },
+      {
+        label: 'Delete', icon: 'fa-close', command: () => {
+          // this.delete();
+        }
+      },
+      { label: 'Angular.io', icon: 'fa-link', url: 'http://angular.io' },
+      { label: 'Theming', icon: 'fa-paint-brush', routerLink: ['/theming'] }
+    ];
     this.activeIndex = 0;
     this.sharedService.user = this.appConfig.getCurrentUser();
     this.usersList = this.appConfig.getUsersList();
     if (this.usersList && this.usersList.length > 0) {
       for (let index = 0; index < this.usersList.length; index++) {
         let u = this.usersList[index];
-        if(u.divisions.toLowerCase() === 'all'){
+        if (u.divisions.toLowerCase() === 'all') {
           u.divisions = 'All';
-        }else{
-        u.divisions = appConfig.getDivisionLabel(u.divisions);
+        } else {
+          u.divisions = appConfig.getDivisionLabel(u.divisions);
         }
         let categories = [];
         for (let x = 0; x < u.dataSources.length; x++) {
@@ -61,7 +77,9 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   ngOnInit() {
     this.sharedService.setBreadcurmb([{ name: 'Confirgurations List', link: '/#/home' }], true);
     if (!this.configurationList) {
+      this.loading = true;
       this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions);
+
     }
 
 
@@ -84,9 +102,13 @@ export class ConfigListPage implements OnInit, AfterViewInit {
         cs.push(tempConf);
       }
       this.configurationList = cs;
+      this.loading = false;
       // console.log(JSON.stringify(this.configurationList));
 
-    });
+    },
+      err => {
+        this.loading = false;
+      });
   }
 
 
@@ -106,32 +128,50 @@ export class ConfigListPage implements OnInit, AfterViewInit {
       console.log('unknown source tab');
     }
   }
-  navigateToNewUser(){
+  navigateToNewUser() {
     this.router.navigate(['/newUser']);
   }
 
-  navigateToModify(conf){
+  navigateToModify(conf) {
+     let target = conf.target || conf.srcElement || conf.currentTarget;
+    let idAttr = target.attributes.id;
+    let ids = idAttr.nodeValue;
+    console.log(ids);
+
     console.log(conf);
     let id = '';
-    if(conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata'){
+    if (conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata') {
       id = conf.dataset;
-    }else{
-      id=conf.id;
+    } else {
+      id = conf.id;
     }
-      this.router.navigate(['/modifyConf'],
-        { queryParams:
-          { type: (conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata'? 'odata' : conf.sourceCategory)|| '',
-            div: conf.group,
-            id: id || '',
-            pmid: conf.pmID }
-          });
+    this.router.navigate(['/modifyConf'],
+      {
+        queryParams:
+        {
+          type: (conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata' ? 'odata' : conf.sourceCategory) || '',
+          div: conf.group,
+          id: id || '',
+          pmid: conf.pmID
+        }
+      });
   }
 
-  navigateToUpdateUser(user){
-      this.router.navigate(['/updateUser'],
-        { queryParams:
-          { userid: user.userID }
-          });
+  navigateToUpdateUser(user) {
+    this.sharedService.data = { user: JSON.parse(JSON.stringify(this.getUserIgnoreCase(user.userID))) };
+    console.log(this.sharedService.data);
+
+    this.router.navigate(['/updateUser']);
+  }
+
+  getUserIgnoreCase(userID) {
+    userID = (userID + '').toLowerCase();
+    for (var u in this.appConfig.users) {
+      if (this.appConfig.users.hasOwnProperty(u) && userID == (u + "").toLowerCase()) {
+        return this.appConfig.users[u];
+      }
+    }
+
   }
 
 }

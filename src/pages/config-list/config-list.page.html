@@ -11,7 +11,9 @@
 
           <p-tabPanel header="Extracts" leftIcon="fa-database" *ngIf="sharedService.user.role.roles.views?.configListView">
 
-            <p-dataTable #dt [value]="configurationList" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
+            <p-dataTable #dt [value]="configurationList"
+             [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,20,40,80,200]"
+            [responsive]="true" role="region" id="divisionsDT" aria-live="polite" [loading]="loading">
               <p-header>
 
                 <span>Extracts Matrix</span>
@@ -59,7 +61,8 @@
 
               <p-column header="Action" styleClass="col-button"  [style]="{'text-align':'center'}" *ngIf="sharedService.user.role.roles.configListView.showConfigButton">
                 <ng-template let-conf="rowData" pTemplate="body">
-                  <button type="button" pButton icon="fa-tasks" class="ui-button-secondary" (click)="navigateToModify(conf)" label="Configure"></button>
+                  <p-splitButton label="Actions" icon="fa-check" [model]="items"></p-splitButton>
+                  <!--<button type="button" pButton icon="fa-cog" class="ui-button-secondary" (click)="navigateToModify(conf)" label="Configure"></button>-->
                 </ng-template>
               </p-column>
             </p-dataTable>
@@ -68,40 +71,42 @@
 
           <p-tabPanel header="Users" leftIcon="fa-users" *ngIf="sharedService.user.role.roles.views?.userListView">
 
-            <p-dataTable #udt [value]="usersList" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
+            <p-dataTable #udt [value]="usersList"
+             [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,20,40,80,200]"
+             [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
               <p-header>
 
                 <span>Users List</span>
                 <div style="float:right">
-                  <button pButton *ngIf="sharedService.user.role.roles.userListView?.showNewUserButton" type="button"  class="ui-button-success" label="New User" [routerLink]="['/newUser']" icon="fa-plus" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
+                  <button pButton *ngIf="sharedService.user.role.roles.userListView?.showNewUserButton" type="button"  class="ui-button-success" label="New User" [routerLink]="['/newUser']" icon="fa-user-plus" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
                 </div>
               </p-header>
               <p-column field="userID" [sortable]="true" [filter]="true" [style]="{'width':'175px'}">
                 <ng-template pTemplate="filter" let-col>
-                  <label for="idFilter">User ID</label>
-                  <input type="text" id="idFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="User ID"
+                  <label for="uIdFilter">User ID</label>
+                  <input type="text" id="uIdFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="User ID"
                     pInputText>
                 </ng-template>
               </p-column>
               <p-column field="name" [sortable]="true" [filter]="true">
                 <ng-template pTemplate="filter" let-col>
-                  <label for="nameFilter">Name</label>
-                  <input type="text" id="nameFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Name"
+                  <label for="uNameFilter">Name</label>
+                  <input type="text" id="uNameFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Name"
                     pInputText>
                 </ng-template>
               </p-column>
               <p-column field="divisions" [sortable]="true" [filter]="true"  [style]="{'width':'215px'}">
                 <ng-template pTemplate="filter" let-col>
-                  <label for="divisionFilter">Division</label>
+                  <label for="uDivisionFilter">Division</label>
                   <!--<p-dropdown [options]="appConfig.getDivionsList(true)" id="divisionFilter" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value,col.field,col.filterMatchMode)" styleClass="ui-column-filter"></p-dropdown>-->
-                  <input type="text" id="divisionFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Division"
+                  <input type="text" id="uDivisionFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Division"
                     pInputText>
                 </ng-template>
               </p-column>
               <p-column field="dataSources" [sortable]="true" [filter]="true">
                 <ng-template pTemplate="filter" let-col>
-                  <label for="dsFilter">Category</label>
-                  <input type="text" id="dsFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Category"
+                  <label for="uDsFilter">Category</label>
+                  <input type="text" id="uDsFilter" (keyup)="udt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Category"
                     pInputText>
                 </ng-template>
               </p-column>
@@ -114,7 +119,7 @@
               </p-column>
                <p-column header="Action" styleClass="col-button"  [style]="{'text-align':'center'}" *ngIf="sharedService.user.role.roles.userListView?.showUpdateButton">
                 <ng-template let-user="rowData" pTemplate="body">
-                  <button type="button" pButton icon="fa-tasks" class="ui-button-secondary" (click)="navigateToUpdateUser(user)" label="Update"></button>
+                  <button type="button" pButton icon="fa-user" class="ui-button-secondary" (click)="navigateToUpdateUser(user)" label="Update"></button>
                 </ng-template>
               </p-column>
             </p-dataTable>

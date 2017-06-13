@@ -1,4 +1,4 @@
-import { appConfig } from './../../model/AppConfig';
+
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
 

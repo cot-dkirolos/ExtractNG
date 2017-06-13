@@ -2280,8 +2280,28 @@ body .ui-datatable .ui-datatable-header, body .ui-datatable .ui-datatable-footer
   text-align: left;
 }
 
-.col-button{
-  width: 226px;
+// .col-button{
+//   width: 226px;
+// }
+
+
+// .ui-cell-data {
+//     white-space: nowrap ;
+//     overflow: hidden ;
+//     text-overflow: ellipsis ;
+// }
+// .ui-cell-data:hover{
+//     overflow: visible;
+//     white-space: normal;
+//     width: auto;
+
+//     }
+// p.ui-cell-data {
+//     margin:0;
+// }
+
+div.ui-splitbutton>*>ul>li>a.ui-menuitem-link.ui-corner-all {
+    text-align: left;
 }
 
 

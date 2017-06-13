@@ -1,4 +1,4 @@
-import { appConfig } from './../../model/AppConfig';
+
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
 
@@ -38,6 +38,8 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   divisions: SelectItem[];
   sourceCategories: SelectItem[];
   selectedDivision: string;
+  divisionLabel: string;
+  categoryLabel: string;
 
   timePeriod = 'M';
 
@@ -207,6 +209,8 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     if (!this.conf.id) {
       this.conf.id = this.sharedService.getGUUID();
     }
+    this.divisionLabel = this.appConfig.getDivisionLabel(this.conf.group);
+    this.categoryLabel = this.appConfig.getSourceCategoryLabel(this.conf.sourceCategory);
     // this.conf = new Configuration(config.id);
     // this.conf.name = config.name;
     // this.conf.pmID = config.pmID;

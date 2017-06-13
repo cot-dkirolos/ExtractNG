@@ -1,3 +1,4 @@
+import { SharedService } from './../shared/shared.service';
 
 import { Inject, Injectable } from '@angular/core';
 import { Http } from '@angular/http';
@@ -15,9 +16,9 @@ export class AppConfig {
   config: any = null;
   private userRoles: any = null;
   public usersGroups: any = null;
-  private users: any = null;
+  public users: any = null;
 
-  constructor() {
+  constructor(private sharedService: SharedService) {
   }
 
   /**
@@ -46,9 +47,9 @@ export class AppConfig {
     const user = JSON.parse(JSON.stringify(this.users[key]));
     if (user) {
 
-      const group = this.newObject(this.getUserGroup(user.groupID));
-      const roles = this.newObject(this.getUserRole(group.roleKey));
-      const divisions = this.newObject(group.divisions[0]);
+      const group = this.sharedService.newObject(this.getUserGroup(user.groupID));
+      const roles = this.sharedService.newObject(this.getUserRole(group.roleKey));
+      const divisions = this.sharedService.newObject(group.divisions[0]);
       //  7. configure user object
       user.role = roles;
       user.group = group;
@@ -66,12 +67,13 @@ export class AppConfig {
     // return this.users[key];
   }
   public getCurrentUser() {
-    const user = JSON.parse(JSON.stringify(this.users[jQuery.cookie('extract.cot_uname')]));
+    // const user = JSON.parse(JSON.stringify(this.users[jQuery.cookie('extract.cot_uname').toLowerCase()]));
+    const user = JSON.parse(JSON.stringify(this.getUserIgnoreCase(jQuery.cookie('extract.cot_uname'))));
     if (user) {
 
-      const group = this.newObject(this.getUserGroup(user.groupID));
-      const roles = this.newObject(this.getUserRole(group.roleKey));
-      const divisions = this.newObject(group.divisions[0]);
+      const group = this.sharedService.newObject(this.getUserGroup(user.groupID));
+      const roles = this.sharedService.newObject(this.getUserRole(group.roleKey));
+      const divisions = this.sharedService.newObject(group.divisions[0]);
       //  7. configure user object
       user.role = roles;
       user.group = group;
@@ -97,23 +99,33 @@ export class AppConfig {
       const users = JSON.parse(JSON.stringify(this.users));
       let us = [];
       for (const key in users) {
-        const u = this.getUser(key);
-        if (divisions && divisions == 'all') {
-          for (let index = 0; index < dataSources.length; index++) {
-            let dataSource = dataSources[index];
-            if (this.isSameSourceCategory(u, dataSource) && u.userID !== currentUser.userID) {
-              us.push(u);
-              break;
+        if (users.hasOwnProperty(key)) {
+          const u = this.getUser(key);
+          if (divisions && divisions == 'all') {
+            for (let index = 0; index < dataSources.length; index++) {
+              let dataSource = dataSources[index];
+              // if (this.isSameSourceCategory(u, dataSource) && u.userID !== currentUser.userID) {
+              if (this.isSameSourceCategory(u, dataSource)) {
+                if (currentUser.role.key === 'super_admin') {
+                  us.push(u);
+                  break;
+                } else if (currentUser.role.key !== 'super_admin' && u.role.key !== 'super_admin') {
+                  us.push(u);
+                  break;
+                }
+
+              }
+
             }
+          } else {
+            for (let index = 0; index < dataSources.length; index++) {
+              let dataSource = dataSources[index];
 
-          }
-        } else {
-          for (let index = 0; index < dataSources.length; index++) {
-            let dataSource = dataSources[index];
-
-            if (this.isSameDataSourceAndDivision(u, dataSource, currentUser.divisions) && u.userID !== currentUser.userID) {
-              us.push(u);
-              break;
+              // if (this.isSameDataSourceAndDivision(u, dataSource, currentUser.divisions) && u.userID !== currentUser.userID) {
+              if (this.isSameDataSourceAndDivision(u, dataSource, currentUser.divisions) && u.role.key !== 'super_admin' && currentUser.role.key !== 'super_admin') {
+                us.push(u);
+                break;
+              }
             }
           }
         }
@@ -221,7 +233,7 @@ export class AppConfig {
     }
   }
 
-   getUserGroupsList(withEmpty?: boolean) {
+  getUserGroupsList(withEmpty?: boolean) {
     const user = this.getCurrentUser();
     let groups = [];
     if (withEmpty) {
@@ -231,50 +243,55 @@ export class AppConfig {
     for (var key in this.usersGroups) {
       if (this.usersGroups.hasOwnProperty(key)) {
         var element = this.usersGroups[key];
-        groups.push({value: element.groupID, label: element.name});
+        groups.push({ value: element.groupID, label: element.name });
       }
     }
     // this.usersGroups.forEach(element => {
     //   groups.push({value: element.groupID, label: element.name});
     // });
 
-    if(user.role.key === 'super_admin'){
+    if (user.role.key === 'super_admin') {
       return groups;
     }
 
-    if(user.role.key === 'emp_admin' ){
+    if (user.role.key === 'epm_admin') {
       for (var index = 0; index < groups.length; index++) {
         var group = groups[index];
-        if(group.value.startsWith('odata') || group.value.startsWith('swms') ){
-          delete groups[index];
+        if (group.value.startsWith('odata') || group.value.startsWith('swms') || group.value.startsWith('super_admin_all_group')) {
+          groups = this.remove_array_value(groups, group);
+          index--;
         }
       }
       return groups;
     }
-    if(user.role.key === 'odata_admin' ){
+    if (user.role.key === 'odata_admin') {
       for (var index = 0; index < groups.length; index++) {
         var group = groups[index];
-        if(group.value.startsWith('emp') || group.value.startsWith('swms') ){
-          delete groups[index];
+        if (group.value.startsWith('epm') || group.value.startsWith('swms') || group.value.startsWith('super_admin_all_group')) {
+          groups = this.remove_array_value(groups, group);
+          index--;
         }
       }
       return groups;
     }
-    if(user.role.key === 'swms_admin' ){
+    if (user.role.key === 'swms_admin') {
       for (var index = 0; index < groups.length; index++) {
         var group = groups[index];
-        if(group.value.startsWith('emp') || group.value.startsWith('odata') ){
-          delete groups[index];
+        if (!group.value.startsWith('swms')) {
+          groups = this.remove_array_value(groups, group);
+          index--;
         }
       }
       return groups;
     }
 
-    if(user.role.key === 'division_admin' ){
-      for (var index = 0; index < groups.length; index++) {
-        var group = groups[index];
-        if(!group.value.contains(user.divisions) ){
-          delete groups[index];
+    if (user.role.key === 'division_admin') {
+      let grps = [];
+      for (let index: number = 0; index < groups.length; index++) {
+        let group = groups[index];
+        if (!group.value.includes(user.divisions)) {
+          groups = this.remove_array_value(groups, group);
+          index--;
         }
       }
       return groups;
@@ -282,6 +299,31 @@ export class AppConfig {
 
     return null;
 
+  }
+
+ getUserIgnoreCase(userID) {
+    userID = (userID + '').toLowerCase();
+    for (var u in this.users) {
+      if (this.users.hasOwnProperty(u) && userID == (u + "").toLowerCase()) {
+        return this.users[u];
+      }
+    }
+
+  }
+
+  remove_array_value(array, value) {
+    var index = array.indexOf(value);
+    if (index >= 0) {
+      array.splice(index, 1);
+      return this.reindex_array(array);
+    }
+  }
+  reindex_array(array) {
+    var result = [];
+    for (var key in array) {
+      result.push(array[key]);
+    }
+    return result;
   }
 
   public load(http: Http) {
@@ -340,10 +382,5 @@ export class AppConfig {
       });
 
     });
-  }
-
-  newObject(object: any) {
-
-    return object ? JSON.parse(JSON.stringify(object)) : null;
   }
 }
