@@ -13,7 +13,7 @@ export class SharedService {
   breadcrumbItems: BreadcrumbItem[];
   block: boolean;
 
-  public data:any;
+  public paramsToPass:any;
 
   public user;
 

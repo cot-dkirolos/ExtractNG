@@ -2,7 +2,7 @@ import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
 import { SharedService } from './../../providers/shared/shared.service';
 import { Router } from '@angular/router';
-import { ConfigurationListObj, Schedule } from './../../model/interfaces';
+import { ConfigurationListObj, Schedule, ConfigContent } from './../../model/interfaces';
 import { ExtractService } from './../../providers/extract/extract.service';
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { SelectItem, MenuItem, TabView } from 'primeng/primeng';
@@ -28,22 +28,22 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   items: MenuItem[];
 
+  selectedConf: any;
+
   // user: any;
 
   constructor(private extractService: ExtractService, private router: Router, public sharedService: SharedService, public appConfig: AppConfig) {
     this.items = [
       {
-        label: 'Configure', icon: 'fa-tasks', command: (event) => {
-          this.navigateToModify(event);
+        label: 'Configure', icon: 'fa-tasks', command: () => {
+          this.navigateToModify(this.selectedConf);
         }
       },
       {
-        label: 'Delete', icon: 'fa-close', command: () => {
-          // this.delete();
+        label: 'Clone', icon: 'fa-files-o', command: () => {
+          this.navigateToClone(this.selectedConf);
         }
-      },
-      { label: 'Angular.io', icon: 'fa-link', url: 'http://angular.io' },
-      { label: 'Theming', icon: 'fa-paint-brush', routerLink: ['/theming'] }
+      }
     ];
     this.activeIndex = 0;
     this.sharedService.user = this.appConfig.getCurrentUser();
@@ -76,11 +76,56 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.sharedService.setBreadcurmb([{ name: 'Confirgurations List', link: '/#/home' }], true);
-    if (!this.configurationList) {
       this.loading = true;
-      this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions);
+      this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions).then(result => {
+        
+        // let rs = this.configurationList;
 
-    }
+        // console.log("result:" + rs + ',length:' + rs.length);
+        // let finalList = [];
+        // for (var index = 0; index < rs.length; index++) {
+        //   let element = rs[index];
+
+        //   if (element.sourceCategory === 'OpenData') {
+        //     element.sourceCategory = 'odata';
+        //   } else {
+        //     element.sourceCategory = 'epm';
+        //   }
+
+
+
+        //   // console.log(element);
+        //   const body = btoa(JSON.stringify(element));
+        //   let data = null;
+        //   if (element.sourceCategory === 'epm') {
+        //     data = {
+        //       QualifiedName: 'Extract/EPM_' + element.group + '/id_' + element.pmID + '.json',
+        //       ConfigContent: body,
+        //       ContentType: 'application/json'
+        //     };
+        //     finalList.push(data);
+        //   }
+        // }
+        // console.log(finalList.length);
+
+        // for (let index = 0; index < finalList.length; index++) {
+        //   const content = finalList[index];
+        //   const configContent = JSON.parse(atob(content.ConfigContent));
+        //   this.extractService.checkIfpmIDExist('id_'+configContent.pmID).then(result => {
+        //     console.log("Config ID : " + configContent.pmID + ", Exist:" + result);
+        //     if (!result) {
+        //       this.extractService.saveExtractConf(content).subscribe(result => {
+        //         this.sharedService.block = false;
+        //         console.log(result);
+        //       },
+        //         err => {
+        //           this.sharedService.block = false;
+        //           console.error(err.json());
+        //         });
+        //     }
+        //   });
+        // }
+      });
 
 
   }
@@ -91,24 +136,27 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   getExtractList(sources, division) {
     this.configurationList = [];
     const cs = [];
-    this.extractService.getExtractListBySource(sources, division).subscribe(list => {
-      for (let index = 0; index < list.value.length; index++) {
-        const conf = list.value[index];
-        const tempConf = JSON.parse(window.atob(conf.ConfigContent));
-        const src = (<string>conf.GroupName).substr(0, (<string>conf.GroupName).indexOf('_')).toLowerCase();
+    return new Promise((resolve, reject) => {
+      this.extractService.getExtractListBySource(sources, division).subscribe(list => {
+        for (let index = 0; index < list.value.length; index++) {
+          const conf = list.value[index];
+          const tempConf = JSON.parse(window.atob(conf.ConfigContent));
+          const src = (<string>conf.GroupName).substr(0, (<string>conf.GroupName).indexOf('_')).toLowerCase();
 
-        tempConf.sourceCategory = this.appConfig.getSourceCategoryLabel(src);
-        tempConf.division = this.appConfig.getDivisionLabel((<string>conf.GroupName).substr((<string>conf.GroupName).indexOf('_') + 1).toLowerCase());
-        cs.push(tempConf);
-      }
-      this.configurationList = cs;
-      this.loading = false;
-      // console.log(JSON.stringify(this.configurationList));
-
-    },
-      err => {
+          tempConf.sourceCategory = this.appConfig.getSourceCategoryLabel(src);
+          tempConf.division = this.appConfig.getDivisionLabel((<string>conf.GroupName).substr((<string>conf.GroupName).indexOf('_') + 1).toLowerCase());
+          cs.push(tempConf);
+        }
+        this.configurationList = cs;
         this.loading = false;
-      });
+        // console.log(JSON.stringify(this.configurationList));
+        resolve(this.configurationList);
+      },
+        err => {
+          this.loading = false;
+          reject(false);
+        });
+    });
   }
 
 
@@ -133,10 +181,6 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   }
 
   navigateToModify(conf) {
-     let target = conf.target || conf.srcElement || conf.currentTarget;
-    let idAttr = target.attributes.id;
-    let ids = idAttr.nodeValue;
-    console.log(ids);
 
     console.log(conf);
     let id = '';
@@ -157,9 +201,25 @@ export class ConfigListPage implements OnInit, AfterViewInit {
       });
   }
 
+  navigateToClone(conf) {
+
+    let configToClone = this.sharedService.newObject(conf);
+
+    let id = '';
+    if (configToClone.sourceCategory && (configToClone.sourceCategory.toLowerCase() == 'odata' || configToClone.sourceCategory.toLowerCase() == 'opendata')) {
+      configToClone.sourceCategory = 'odata';
+    } else {
+      if(configToClone.sourceCategory){
+        configToClone.sourceCategory = configToClone.sourceCategory.toLowerCase();
+
+      }
+    }
+    this.sharedService.paramsToPass = { 'configToClone': configToClone };
+    this.router.navigate(['/newConf']);
+  }
+
   navigateToUpdateUser(user) {
-    this.sharedService.data = { user: JSON.parse(JSON.stringify(this.getUserIgnoreCase(user.userID))) };
-    console.log(this.sharedService.data);
+    this.sharedService.paramsToPass = { user: JSON.parse(JSON.stringify(this.getUserIgnoreCase(user.userID))) };
 
     this.router.navigate(['/updateUser']);
   }

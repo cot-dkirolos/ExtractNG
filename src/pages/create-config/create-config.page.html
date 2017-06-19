@@ -72,7 +72,8 @@
               <div class="col-xs-12 col-md-6">
                 <div class="form-group">
                   <label for="idField">Extract ID</label>
-                  <input type="text" pInputText [ngModel]="conf?.pmID" (ngModelChange)="conf ? conf.pmID=$event : null" name="pmID" class="form-control"
+                  <span style="font-size: small;">You can use letters, numbers, and underscore (_). Use maximum 20 characters.</span>
+                  <input type="text" pInputText pTooltip="Maximum length is 20 alphabet characters" tooltipPosition="top" [maxlength]="20" [ngModel]="conf?.pmID" (ngModelChange)="conf ? conf.pmID=$event  : null" name="pmID" class="form-control"
                     id="idField" placeholder="Extract ID" [required]="true" #pmID="ngModel" >
                 <span class="badResultCode"  [hidden]="pmID.valid || (pmID.pristine && !f.submitted)">
                   Extract ID is required
@@ -151,7 +152,7 @@
                 <div class="col-xs-12">
                   <div class="form-group">
                     <label for="dataset">Dataset Name</label>
-                    <input type="text" pInputText  [ngModel]="conf?.dataset" (ngModelChange)="conf ? conf.dataset=$event : null"
+                    <input type="text" pInputText  [ngModel]="conf?.pmID ? 'id_'+conf?.pmID : null" [readonly]="true" (ngModelChange)="conf ? conf.dataset=$event : null"
                       name="dataset" #dataset="ngModel" class="form-control" id="dataset" placeholder="Dataset Name" [required]="conf?.sourceCategory === 'odata'">
                 <span class="badResultCode" [hidden]="dataset.valid || (dataset.pristine && !f.submitted)">
                   Dataset Name is required
@@ -166,7 +167,7 @@
                     <label for="oDataUrlField">URL</label>
                     <!--[ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.dataset ? conf.dataset : '') : ''"-->
                     <input pInputText type="text" class="form-control" id="oDataUrlField" placeholder="" #url="ngModel" name="url" [readonly]="conf.connection.type"
-                      (ngModelChange)="conf ? conf.url=$event : null" [ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.dataset ? conf.dataset : '') : ''"
+                      (ngModelChange)="conf ? conf.url=$event : null" [ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.pmID ? 'id_'+conf.pmID : '') : ''"
                       [required]="!conf.connection.type || conf.connection.type == ''">
                       <span class="badResultCode" [hidden]="(url.valid || url.disabled) || (url.pristine && !f.submitted)">
                   URL is required
@@ -300,7 +301,8 @@
                 <div class="form-group">
                   <label for="fromTime">Start</label>
                   <!--<p-calendar  inputId="startTime" [style]="{'width':'100%'}"></p-calendar>-->
-                  <input pInputText id='fromTime' class="form-control" [ngModel]="conf?.query.fromTime"  [disabled]="!conf.query.timePeriod || conf.query.timePeriod == ''" (ngModelChange)="conf?.query.fromTime ? conf?.query.fromTime=$event : null"
+                   <!--[disabled]="!conf.query.timePeriod || conf.query.timePeriod == ''" -->
+                  <input pInputText id='fromTime' class="form-control" [ngModel]="conf?.query.fromTime"  (ngModelChange)="conf?.query.fromTime ? conf?.query.fromTime=$event : null"
                     placeholder="Start Date" name="fromTime" size=8>
                 </div>
               </div>
@@ -309,7 +311,7 @@
                 <div class="form-group">
                   <label for="toTime">End</label>
                   <!--<p-calendar  inputId="endTime" [style]="{'width':'100%'}"></p-calendar>-->
-                  <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" [disabled]="!conf.query.timePeriod || conf.query.timePeriod == ''"  (ngModelChange)="conf?.query.toTime ? conf?.query.toTime=$event : null"
+                  <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" (ngModelChange)="conf?.query.toTime ? conf?.query.toTime=$event : null"
                     name="toTime" placeholder="End Date" size=8>
                 </div>
               </div>

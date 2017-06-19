@@ -52,45 +52,27 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     private router: Router, public sharedService: SharedService,
     private element: ElementRef,
     private appConfig: AppConfig) {
-
+    // get data source category List
     this.sourceCategories = appConfig.getSourceCategoryList();
-    // this.sourceCategories = appConfig.getConfig('categoryList');
-
+    // get divisions listt
     this.divisions = appConfig.getDivionsList();
-    // this.divisions.push(this.extractService.getAppData().divisionsList);
-    // this.divisions.push({ label: 'Court Division', value: 'court' });
-    // this.divisions.push({ label: 'Fire Division', value: 'fire' });
-
-
+    // get Db connection types
     this.connectionTypes = [];
     this.connectionTypes.push({ label: '', value: null });
     this.appConfig.config.dbConnectionTypes.forEach(element => {
       this.connectionTypes.push(element);
     });
-    // this.connectionTypes.push({ label: 'Excel-sheets on NetShare', value: 'excelsheet' });
-    // this.connectionTypes.push({ label: 'Oracle', value: 'oracle' });
-    // this.connectionTypes.push({ label: 'SQL Server', value: 'sqlserver' });
+    // get db connection defaultes
+    this.dbDefaultes = this.appConfig.config.dbConnectionDefaults;
+    // get periods list
     this.periods = [];
     this.periods = this.appConfig.config.queryTimePeriods;
-    // this.periods.push({ label: 'Days', value: 'D' });
-    // this.periods.push({ label: 'Months', value: 'M' });
-    // this.periods.push({ label: 'Quarters', value: 'Q' });
-
-
+    // get configuration status list
     this.statuses = [];
     this.statuses = this.appConfig.config.configStatus;
-    // this.statuses.push({ label: 'Active', value: 'active' });
-    // this.statuses.push({ label: 'Inactive', value: 'inactive' });
-
+    // get output file type list
     this.types = [];
     this.types = this.appConfig.config.extractFiletypes;
-    // this.types.push({ label: 'CSV', value: 'csv' });
-    // this.types.push({ label: 'JSON', value: 'json' });
-    // this.types.push({ label: 'XML', value: 'xml' });
-
-
-    this.dbDefaultes = this.appConfig.config.dbConnectionDefaults;
-
   }
 
   numbersOnly(event: any) {
@@ -134,13 +116,8 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
-
     // get parameters from URL
     this.getURLParams();
-
-
-
-
   }
 
   setBreadCrumb() {
@@ -178,11 +155,21 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   initConfiguration() {
-    this.conf = new Configuration(this.sharedService.getGUUID());
-    this.conf.group = this.divisions[0].value;
-    this.conf.sourceCategory = this.configurationType ? this.isSourceAllowed(this.configurationType) ? this.configurationType : this.sourceCategories[0].value : this.sourceCategories[0].value;
-    if (this.conf.sourceCategory && this.conf.sourceCategory !== 'odata') {
-      this.conf.connection.type = this.connectionTypes[1].value;
+    if (this.sharedService.paramsToPass && this.sharedService.paramsToPass.configToClone) {
+      this.conf = this.sharedService.newObject(this.sharedService.paramsToPass.configToClone);
+      this.sharedService.paramsToPass = null;
+      this.conf.id = this.sharedService.getGUUID();
+      this.conf.pmID = null;
+      if (this.conf.sourceCategory && this.conf.sourceCategory === 'odata') {
+        this.conf.dataset = null;
+      }
+    } else {
+      this.conf = new Configuration(this.sharedService.getGUUID());
+      this.conf.group = this.divisions[0].value;
+      this.conf.sourceCategory = this.configurationType ? this.isSourceAllowed(this.configurationType) ? this.configurationType : this.sourceCategories[0].value : this.sourceCategories[0].value;
+      if (this.conf.sourceCategory && this.conf.sourceCategory !== 'odata') {
+        this.conf.connection.type = this.connectionTypes[1].value;
+      }
     }
   }
 
@@ -324,45 +311,60 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     if (isValid) {
       this.sharedService.block = true;
       this.conf = value;
-      const body = btoa(JSON.stringify(value));
-      let data;
-      if (this.conf.sourceCategory === 'odata') {
-        data = {
-          QualifiedName: 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json',
-          ConfigContent: body,
-          ContentType: 'application/json',
-          APIName: 'aggregator'
-        };
-      } else {
+      this.extractService.checkIfpmIDExist('id_'+this.conf.pmID).then(isExist => {
 
-        data = {
-          QualifiedName: 'Extract/EPM_' + this.conf.group + '/' + this.conf.id + '.json',
-          ConfigContent: body,
-          ContentType: 'application/json'
-        };
+        if (!isExist) {
 
-      }
-      if (data) {
-        jQuery('#savedMsg').show();
-        jQuery('#savedMsg').html('Saving...');
-        console.log(data);
-        this.extractService.saveExtractConf(data).subscribe(result => {
-          this.sharedService.block = false;
-          console.log(result);
-          jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
-          jQuery('#savedMsg').fadeOut(3000);
+          const body = btoa(JSON.stringify(value));
+          let data;
+          if (this.conf.sourceCategory === 'odata') {
+            data = {
+              QualifiedName: 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json',
+              ConfigContent: body,
+              ContentType: 'application/json',
+              APIName: 'aggregator'
+            };
+          } else {
+            this.conf.dataset = null;
 
-        },
-          err => {
+            data = {
+              QualifiedName: 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json',
+              ConfigContent: body,
+              ContentType: 'application/json'
+            };
+
+          }
+          if (data) {
+            jQuery('#savedMsg').show();
+            jQuery('#savedMsg').html('Saving...');
+            console.log(data);
+            this.extractService.saveExtractConf(data).subscribe(result => {
+              this.sharedService.block = false;
+              console.log(result);
+              jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
+              jQuery('#savedMsg').fadeOut(3000);
+
+            },
+              err => {
+                this.sharedService.block = false;
+                console.log(err.json());
+                jQuery('#savedMsg').html('<span class="badResultCode">' + err.json().error.message + '</span>');
+                // jQuery('#savedMsg').html('<span class="badResultCode">Could not save, please try again later.</span>');
+              });
+          } else {
             this.sharedService.block = false;
-            console.log(err.json());
-            jQuery('#savedMsg').html('<span class="badResultCode">' + err.json().error.message + '</span>');
-            // jQuery('#savedMsg').html('<span class="badResultCode">Could not save, please try again later.</span>');
-          });
-      } else {
-        this.sharedService.block = false;
-      }
-
+          }
+        } else {
+          this.sharedService.block = false;
+          jQuery('#savedMsg').html('<span class="badResultCode">Extact ID already exist</span>');
+        }
+      },
+        err => {
+          this.sharedService.block = false;
+          console.log(err.json());
+          jQuery('#savedMsg').html('<span class="badResultCode">' + err.json().error.message + '</span>');
+          // jQuery('#savedMsg').html('<span class="badResultCode">Could not save, please try again later.</span>');
+        });
     }
   }
 

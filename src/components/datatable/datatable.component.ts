@@ -13,7 +13,7 @@ import { FilterMetadata } from 'primeng/primeng';
 import { SortMeta } from 'primeng/primeng';
 import { DomHandler } from 'primeng/primeng';
 import { Subscription } from 'rxjs/Subscription';
-import { BlockableUI,TooltipModule } from 'primeng/primeng';
+import { BlockableUI, TooltipModule } from 'primeng/primeng';
 
 @Component({
   selector: 'p-dtRadioButton',
@@ -170,10 +170,13 @@ export class ColumnFooters {
                         [ngClass]="{'ui-editable-column':col.editable,'ui-selection-column':col.selectionMode}" (click)="dt.switchCellToEditMode(cell,col,rowData)"
                         [attr.rowspan]="(dt.rowGroupMode=='rowspan' && dt.sortField == col.field && dt.rowGroupMetadata[dt.resolveFieldData(rowData,dt.sortField)].index == rowIndex) ? dt.rowGroupMetadata[dt.resolveFieldData(rowData,dt.sortField)].size : null">
                         <span class="ui-column-title" *ngIf="dt.responsive">{{col.header}}</span>
-                        <p class="ui-cell-data" pTooltip="dt.resolveFieldData(rowData,col.field)" *ngIf="!col.bodyTemplate && !col.expander && !col.selectionMode" [title]="dt.resolveFieldData(rowData,col.field)"><span pTooltip="dt.resolveFieldData(rowData,col.field)">{{dt.resolveFieldData(rowData,col.field)}}</span></p>
-                        <p class="ui-cell-data" pTooltip="dt.resolveFieldData(rowData,col.field)" *ngIf="col.bodyTemplate">
+                        <span class="ui-cell-data mytooltip" *ngIf="!col.bodyTemplate && !col.expander && !col.selectionMode" [title]="dt.resolveFieldData(rowData,col.field)">
+                        <span class="ellipsis">{{dt.resolveFieldData(rowData,col.field)}}</span>
+                        <span *ngIf="dt.resolveFieldData(rowData,col.field).length > 32" class="tooltiptext">{{dt.resolveFieldData(rowData,col.field)}}</span>
+                        </span>
+                        <span class="ui-cell-data" *ngIf="col.bodyTemplate">
                             <p-columnBodyTemplateLoader [column]="col" [rowData]="rowData" [rowIndex]="rowIndex + dt.first"></p-columnBodyTemplateLoader>
-                        </p>
+                        </span>
                         <div class="ui-cell-editor" *ngIf="col.editable">
                             <input *ngIf="!col.editorTemplate" type="text" [(ngModel)]="rowData[col.field]" required="true"
                                 (keydown)="dt.onCellEditorKeydown($event, col, rowData, rowIndex)" class="ui-inputtext ui-widget ui-state-default ui-corner-all"/>

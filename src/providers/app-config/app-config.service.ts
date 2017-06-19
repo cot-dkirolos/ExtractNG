@@ -336,8 +336,8 @@ export class AppConfig {
       }).subscribe((configResponse) => {
         this.config = (typeof configResponse === 'string') ? JSON.parse(configResponse) : configResponse;
         this.userRoles = this.config.userRoles;
-        console.log(this.config);
-        console.log(this.userRoles);
+        // console.log(this.config);
+        // console.log(this.userRoles);
 
         let userGroupsRequest: any = null;
         userGroupsRequest = http.get(this.appConfigUsersGroupsURL);
@@ -352,7 +352,7 @@ export class AppConfig {
             .subscribe((userGroupsResponseData) => {
               this.usersGroups = userGroupsResponseData;
 
-              console.log(this.usersGroups);
+              // console.log(this.usersGroups);
 
               let usersRequest: any = null;
               usersRequest = http.get(this.appConfigUsersURL);
@@ -366,7 +366,7 @@ export class AppConfig {
                   })
                   .subscribe((usersResponseData) => {
                     this.users = usersResponseData;
-                    console.log(this.users);
+                    // console.log(this.users);
                     resolve(true);
                   });
               } else {

@@ -121,19 +121,19 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     const st = new Pikaday({
       field: jQuery('#fromTime')[0],
-      format: 'YYYYMMDD',
+      format: 'YYYYMMDD HH:mm:ss',
     });
 
 
     const et = new Pikaday({
       field: jQuery('#toTime')[0],
-      format: 'YYYYMMDD',
+      format: 'YYYYMMDD HH:mm:ss',
     });
 
 
     const expiryTime = new Pikaday({
       field: jQuery('#expiryTime')[0],
-      format: 'YYYY-MM-DDThh:mm:ss',
+      format: 'YYYY-MM-DDTHH:mm:ss',
       showTime: true,
       showMinutes: true,
       showSeconds: true,
@@ -181,10 +181,10 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
         // }
 
 
-        if (this.guid != '0') {
+        if (this.pmID != '0') {
 
           this.conf = new Configuration(this.guid);
-          this.extractService.getExtractByGUID(this.guid).subscribe(result => {
+          this.extractService.getExtractByGUID('id_' + this.pmID).subscribe(result => {
 
             console.log('result: ' + result);
             console.log('ConfigContent: ' + JSON.parse(window.atob(result.value[0].ConfigContent)));
@@ -312,7 +312,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       toTime: endTime
     };
 
-    this.extractService.executeExtractQuery(data,this.conf.sourceCategory).subscribe(result => {
+    this.extractService.executeExtractQuery(data, this.conf.sourceCategory).subscribe(result => {
       if (result) {
         jQuery('#result').html('');
         this.showResults(result);
@@ -366,16 +366,17 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       if (this.conf.sourceCategory === 'odata') {
         qualifiedName = 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
         data = {
-          QualifiedName: 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json',
+          QualifiedName: qualifiedName,
           ConfigContent: body,
           ContentType: 'application/json',
           APIName: 'aggregator'
         }
       } else {
-        qualifiedName = 'Extract/EPM_' + this.conf.group + '/' + this.conf.id + '.json';
+        this.conf.dataset = null;
+        qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
 
         data = {
-          QualifiedName: 'Extract/EPM_' + this.conf.group + '/' + this.conf.id + '.json',
+          QualifiedName: qualifiedName,
           ConfigContent: body,
           ContentType: 'application/json'
         }
@@ -446,7 +447,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
         if (this.conf.sourceCategory === 'odata') {
           qualifiedName = 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
         } else {
-          qualifiedName = 'Extract/EPM_' + this.conf.group + '/' + this.conf.id + '.json';
+          qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
         }
         this.extractService.deleteExtractConf(qualifiedName).subscribe(result => {
           console.log(result);

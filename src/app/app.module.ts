@@ -34,7 +34,7 @@ import { SharedService } from './../providers/index';
 import {
   InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule,
   InputTextModule, ButtonModule, PanelModule,  SharedModule, MultiSelectModule, TabViewModule,
-  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule
+  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule,MenuModule
 } from 'primeng/primeng';
 
 export function httpFactory(backend: XHRBackend, options: RequestOptions, router: Router, sharedService: SharedService) {
@@ -80,7 +80,7 @@ export function initConfig(config: AppConfig, httpService: Http) {
     InputTextModule, ButtonModule,
     InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule, CalendarModule,
     PanelModule, DataTableModule, SharedModule, MultiSelectModule, DropdownModule, TabViewModule,ConfirmDialogModule,
-    GrowlModule,MessagesModule,PaginatorModule,TooltipModule
+    GrowlModule,MessagesModule,PaginatorModule,TooltipModule,MenuModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [AuthenticationService, ExtractService, ObjectUtils,ConfirmationService,

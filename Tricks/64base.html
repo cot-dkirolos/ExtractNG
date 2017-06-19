@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type='text/javascript' src='users.js'></script>
+    <script type='text/javascript' src='usersGroups.js'></script>
+    <script type='text/javascript' src='AppConfig.js'></script>
+  </head>
+<body>
+
+<p>Click the button to encode a string in base-64.</p>
+
+<button onclick="myFunction()">Encode</button>
+
+<p><strong>Note:</strong> The btoa() method is not supported in IE9 and earlier.</p>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+    var u = users;
+    var groups = usersGroups;
+    var appconfig = appConfig;
+
+    var enc = window.btoa(JSON.stringify(appconfig));
+
+    var res = enc;
+    document.getElementById("demo").innerHTML =  res;
+    if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(document.getElementById("demo"));
+        range.select();
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(document.getElementById("demo"));
+        window.getSelection().addRange(range);
+    }
+    document.execCommand("copy");
+
+}
+</script>
+
+</body>
+</html>

@@ -29,13 +29,28 @@ export class ExtractService {
 
   getExtractByGUID(GUID: string) {
     let url = `/c3api_config/v2/ConfigService.svc/ConfigSet?$select=QualifiedName,ConfigContent&$filter=endswith(QualifiedName,'{GUID}') and ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
-    let link = url.replace('{GUID}', GUID + '.json');
-    console.log(link);
+    let link = url.replace('{GUID}', '/' + GUID + '.json');
+    // console.log(link);
     return this.httpService.get(link)
       .map((res: Response) => {
         return res.json();
       }) // ...and calling .json() on the response to return data
       .catch((error: any) => Observable.throw(error)); // ...errors if any
+  }
+
+  checkIfpmIDExist(id:string){
+    return new Promise((resolve,reject) => {
+    this.getExtractByGUID(id).subscribe(result =>{
+      if(result && result.value[0]){
+        resolve(true);
+      }else{
+        resolve(false);
+      }
+    },
+    err => {
+      Observable.throw(err);
+    });
+  });
   }
 
   saveExtractConf(data) {
@@ -174,7 +189,7 @@ export class ExtractService {
     } else {
       link = this.apiConfigExtractsURL.replace('{SOURCES}', '');
     }
-    console.log(link);
+    // console.log(link);
     return this.httpService.get(link)
       .map((res: Response) => {
         return res.json();

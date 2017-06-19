@@ -25,8 +25,8 @@ export class UpdateUserPage implements OnInit {
     , private extratService: ExtractService
     , private router: Router
     , private confirmationService: ConfirmationService) {
-    if (sharedService.data && sharedService.data.user) {
-      this.user = this.sharedService.newObject(sharedService.data.user);
+    if (sharedService.paramsToPass && sharedService.paramsToPass.user) {
+      this.user = this.sharedService.newObject(sharedService.paramsToPass.user);
       console.log(this.user);
 
 

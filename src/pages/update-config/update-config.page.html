@@ -158,7 +158,7 @@
                 <div class="col-xs-12">
                   <div class="form-group">
                     <label for="dataset">Dataset Name</label>
-                    <input type="text" pInputText [ngModel]="conf?.dataset" (ngModelChange)="conf ? conf.dataset=$event : null" name="dataset"
+                    <input type="text" pInputText [ngModel]="conf?.dataset" [readonly]="true" (ngModelChange)="conf ? conf.dataset=$event : null" name="dataset"
                       #dataset="ngModel" class="form-control" id="dataset" placeholder="Dataset Name" [required]="conf?.sourceCategory === 'odata'">
                     <span class="badResultCode" [hidden]="dataset.valid || (dataset.pristine && !f.submitted)">
                   Dataset Name is required
@@ -300,7 +300,7 @@
                   <div class="form-group">
                     <label for="fromTime">Start</label>
                     <!--<p-calendar  inputId="startTime" [style]="{'width':'100%'}"></p-calendar>-->
-                    <input pInputText id='fromTime' class="form-control" [ngModel]="conf?.query.fromTime" [disabled]="!conf.query.timePeriod || conf.query.timePeriod == ''"  (ngModelChange)="conf?.query.fromTime ? conf?.query.fromTime=$event : null"
+                    <input pInputText id='fromTime' class="form-control" [ngModel]="conf?.query.fromTime" (ngModelChange)="conf?.query.fromTime ? conf?.query.fromTime=$event : null"
                       placeholder="Start Date" name="fromTime" size=8>
                   </div>
                 </div>
@@ -309,7 +309,7 @@
                   <div class="form-group">
                     <label for="toTime">End</label>
                     <!--<p-calendar  inputId="endTime" [style]="{'width':'100%'}"></p-calendar>-->
-                    <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" [disabled]="!conf.query.timePeriod || conf.query.timePeriod == ''" (ngModelChange)="conf?.query.toTime ? conf?.query.toTime=$event : null"
+                    <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" (ngModelChange)="conf?.query.toTime ? conf?.query.toTime=$event : null"
                       name="toTime" placeholder="End Date" size=8>
                   </div>
                 </div>
