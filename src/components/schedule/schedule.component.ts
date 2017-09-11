@@ -53,7 +53,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         scheduleEnabled: true
       },
       execParams: {
-        pmID:'',
+        pmID: '',
         deltaParams: {
           aggrPeriod: 'M',
         //   rangeUnits: 1,
