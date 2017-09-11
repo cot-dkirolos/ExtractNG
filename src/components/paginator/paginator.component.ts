@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 })
 export class Paginator {
 
-  selectId:number;
+  selectId: number;
 
   @Input() pageLinkSize: number = 5;
 
@@ -53,13 +53,13 @@ export class Paginator {
     return this._rows;
   }
 
+  constructor(private sharedService: SharedService){
+    this.selectId = sharedService.getRandomInt(1,100);
+  }
+
   set rows(val: number) {
     this._rows = val;
     this.updatePageLinks();
-  }
-
-  constructor(private sharedService: SharedService){
-    this.selectId = sharedService.getRandomInt(1,100);
   }
 
   isFirstPage() {
@@ -145,7 +145,6 @@ export class Paginator {
     this.rows = this.rowsPerPageOptions[event.target.selectedIndex];
     this.changePageToFirst(event);
   }
-
 }
 
 @NgModule({

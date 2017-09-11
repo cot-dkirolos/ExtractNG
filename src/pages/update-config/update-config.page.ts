@@ -52,8 +52,14 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   statuses: SelectItem[];
   types: SelectItem[];
+  enabledList: SelectItem[];
   dbDefaultes: any;
   msgs: Message[] = [];
+
+  lastUpdateUser = '';
+  lastUpdateTime = '';
+
+  oldConfig: any;
 
 
   constructor(private extractService: ExtractService,
@@ -62,7 +68,6 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     private element: ElementRef,
     private appConfig: AppConfig,
     private confirmationService: ConfirmationService) {
-
 
     // get parameters from URL
     this.getURLParams();
@@ -102,6 +107,11 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     // this.types.push({ label: 'JSON', value: 'json' });
     // this.types.push({ label: 'XML', value: 'xml' });
 
+    this.enabledList = [];
+
+    this.enabledList.push({ label: 'Disabled', value: false });
+    this.enabledList.push({ label: 'Enabled', value: true });
+
 
     this.dbDefaultes = this.appConfig.config.dbConnectionDefaults;
 
@@ -121,13 +131,33 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     const st = new Pikaday({
       field: jQuery('#fromTime')[0],
-      format: 'YYYYMMDD HH:mm:ss',
+      format: 'YYYY-MM-DDTHH:mm:ss',
+      showTime: true,
+      showMinutes: true,
+      showSeconds: true,
+      use24hour: true,
+      incrementHourBy: 1,
+      incrementMinuteBy: 1,
+      incrementSecondBy: 1,
+      autoClose: true,
+      timeLabel: 'Time', // optional string added to left of time select
+
     });
 
 
     const et = new Pikaday({
       field: jQuery('#toTime')[0],
-      format: 'YYYYMMDD HH:mm:ss',
+      format: 'YYYY-MM-DDTHH:mm:ss',
+      showTime: true,
+      showMinutes: true,
+      showSeconds: true,
+      use24hour: true,
+      incrementHourBy: 1,
+      incrementMinuteBy: 1,
+      incrementSecondBy: 1,
+      autoClose: true,
+      timeLabel: 'Time', // optional string added to left of time select
+
     });
 
 
@@ -144,7 +174,6 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       autoClose: true,
       timeLabel: 'Time', // optional string added to left of time select
     });
-    this.sharedService.block = false;
   }
 
   ngOnInit() {
@@ -153,11 +182,12 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   setBreadCrumb() {
     this.sharedService.setBreadcurmb([
       {
-        name: 'Confirgurations List',
-        link: this.sharedService.contextPath + '/#/home'
+        name: 'Configurations List',
+        // link: this.sharedService.contextPath + '/#/home'
+        link: './#/home'
       },
       {
-        name: 'Modify Confirguration'
+        name: 'Update Configuration'
       }
     ], true);
   }
@@ -185,13 +215,15 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
           this.conf = new Configuration(this.guid);
           this.extractService.getExtractByGUID('id_' + this.pmID).subscribe(result => {
+            this.sharedService.block = false;
+            // console.log('result: ' + result);
+            // console.log('ConfigContent: ' + JSON.parse(window.atob(result.value[0].ConfigContent)));
 
-            console.log('result: ' + result);
-            console.log('ConfigContent: ' + JSON.parse(window.atob(result.value[0].ConfigContent)));
-
-
+            this.oldConfig = result.value[0].ConfigContent;
             let configContent = JSON.parse(window.atob(result.value[0].ConfigContent));
             this.initConfiguration(configContent);
+            this.lastUpdateTime = result.value[0].UpdateTime.replace('T',' ');
+            this.lastUpdateUser = result.value[0].User;
 
           });
         }
@@ -200,6 +232,9 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
       });
   }
+    getCurrentConfig(){
+      return btoa(JSON.stringify(this.conf));
+    }
 
   initConfiguration(config: Configuration) {
     this.conf = config;
@@ -210,7 +245,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       this.conf.id = this.sharedService.getGUUID();
     }
     this.divisionLabel = this.appConfig.getDivisionLabel(this.conf.group);
-    this.categoryLabel = this.appConfig.getSourceCategoryLabel(this.conf.sourceCategory);
+    this.categoryLabel = this.appConfig.getSourceCategoryLabel(this.conf.sourceCategory.toLocaleLowerCase());
     // this.conf = new Configuration(config.id);
     // this.conf.name = config.name;
     // this.conf.pmID = config.pmID;
@@ -226,7 +261,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onQueryChange(e) {
-    console.log(e);
+    // console.log(e);
   }
 
   // stop listening to url changes when leave the page
@@ -248,7 +283,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
 
   conTypeChange(event, value) {
-    console.log(JSON.stringify(event) + '-' + value);
+    // console.log(JSON.stringify(event) + '-' + value);
     let found = false;
     if (this.dbDefaultes) {
       for (let index = 0; index < this.dbDefaultes.length; index++) {
@@ -268,12 +303,21 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       this.conf.connection.serviceName = null;
     }
 
+    if(value == 'access'){
+      this.conf.connection.huser = '';
+      this.conf.connection.hpassword = '';
+    }
+
   }
 
   validateURL() {
     this.sharedService.block = true;
     this.refreshConStr();
-    this.extractService.validateURL(this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password)).subscribe(result => {
+    let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
+    if(this.conf.connection.type == 'access'){
+      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    }
+    this.extractService.validateURL(url).subscribe(result => {
       if (result.error) {
         jQuery('#connTestResult').html('<span class="badResultCode">' + result.error + '</span>');
         this.sharedService.block = false;
@@ -299,12 +343,22 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     jQuery('#result').html('<img src="assets/img/ajax_loader.gif">');
     // const timePeriod = jQuery('#timePeriod').val();
     const timePeriod = this.conf.query.timePeriod;
-    const url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
-    const endTime = this.conf.query.fromTime;
-    const startTime = this.conf.query.toTime;
+    let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
+    if(this.conf.connection.type == 'access'){
+      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    }
+    let startTime = this.conf.query.fromTime;
+    let endTime = this.conf.query.toTime;
+    const pmID = this.conf.pmID;
     // const query = this.editor.getValue();
     const query = this.conf.query.sql;
+
+      // if(this.conf.connection.type && this.conf.connection.type == 'excelsheet' && timePeriod == '' ){
+      //   startTime = null;
+      //   endTime = null;
+      // }
     const data = {
+      id: 'id_' + pmID,
       url: url,
       query: query,
       timePeriod: timePeriod,
@@ -322,14 +376,38 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     },
       err => {
         this.sharedService.block = false;
+        if(err['_body'] && typeof err['_body']  == 'string'){
+
+        jQuery('#result').html('<span class="badResultCode">'+err['_body']+'</span>');
+        }else{
         jQuery('#result').html('<span class="badResultCode">Unknown error, please try again later</span>');
-        this.showResults(err);
+        }
+        // this.showResults(err);
       });
 
   }
 
   showResults(result) {
-    jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
+    // jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
+   
+    if(result.sampleurls){
+      let links = '';
+
+      links += '<ul class="list-unstyled">';
+      let host = JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract';
+      for (var link in result.sampleurls[0]) {
+        links +=  '<li>'+  link + ' <br> ' + '<a target="_blank" style="font-size:small" href="' + host + result.sampleurls[0][link] + '">'  + host + result.sampleurls[0][link] + '</a> </li>';
+      }
+    // jQuery('#resultTitle').html('<a target="_blank" href="' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '">' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '</a>');
+    links += '</ul>';
+    let count = 0;
+    let countStr = '';
+    if(result.count){
+      count = result.count;
+      countStr='<span>This query has <strong>'+count+'</strong> record(s) </span><br>';
+    }
+    jQuery('#resultTitle').html(countStr+links);
+    }
     const resp = result.data;
     jQuery('#resultSQL').html(result.sql);
     const cols = [];
@@ -349,7 +427,9 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       data: resp,
       manualColumnResize: true,
       colHeaders: colHeads,
-      columns: cols
+      columns: cols,
+      renderAllRows: true,
+      height: 500
     });
 
   }
@@ -357,10 +437,14 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   saveExtract(isValid: boolean, value: any) {
     // block all buttons
     this.sharedService.block = true;
-    console.log(value);
+    // console.log(value);
     if (isValid) {
       this.conf = value;
-      const body = btoa(JSON.stringify(value));
+      // if(this.conf.connection.type && this.conf.connection.type == 'excelsheet' && this.conf.query.timePeriod == '' ){
+      //   this.conf.query.fromTime = null;
+      //   this.conf.query.toTime = null;
+      // }
+      const body = btoa(JSON.stringify(this.conf));
       let data;
       let qualifiedName;
       if (this.conf.sourceCategory === 'odata') {
@@ -372,8 +456,12 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
           APIName: 'aggregator'
         }
       } else {
+        if(this.conf.sourceCategory.toUpperCase() == 'EPM'){
+            qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+        }else{
+          qualifiedName = 'Extract/'+this.conf.sourceCategory.toLocaleUpperCase()+'_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+        }
         this.conf.dataset = null;
-        qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
 
         data = {
           QualifiedName: qualifiedName,
@@ -385,10 +473,10 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       if (data) {
         jQuery('#savedMsg').show();
         jQuery('#savedMsg').html('Saving...');
-        console.log(data);
+        // console.log(data);
         this.extractService.updateExtractConf(qualifiedName, data).subscribe(result => {
           this.sharedService.block = false;
-          console.log(result);
+          // console.log(result);
           jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
           jQuery('#savedMsg').fadeOut(3000);
 
@@ -409,7 +497,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   saveExtractConf() {
     this.sharedService.block = true;
-    console.log(this.conf);
+    // console.log(this.conf);
     const d = {
       group: 'this.group',
       id: 'this.id',
@@ -450,7 +538,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
           qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
         }
         this.extractService.deleteExtractConf(qualifiedName).subscribe(result => {
-          console.log(result);
+          // console.log(result);
           this.msgs.push({ severity: 'success', summary: 'Deleted', detail: 'Configuration deleted' });
           this.sharedService.msgs = this.msgs;
           this.sharedService.block = false;

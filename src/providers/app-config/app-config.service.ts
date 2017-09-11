@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { SharedService } from './../shared/shared.service';
 
 import { Inject, Injectable } from '@angular/core';
@@ -9,16 +10,39 @@ declare const jQuery: any;
 @Injectable()
 export class AppConfig {
 
-  private appConfigUsersGroupsURL = `http://shelby.corp.toronto.ca:9080/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
-  private appConfigUsersURL = `http://shelby.corp.toronto.ca:9080/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_users/users.json')/ConfigContent`;
-  private appConfigDataURL = `http://shelby.corp.toronto.ca:9080/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_data/app_data.json')/ConfigContent`;
+  // private appConfigUsersGroupsURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
+  // private appConfigUsersURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_users/users.json')/ConfigContent`;
+  // private appConfigDataURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_data/app_data.json')/ConfigContent`;
+  private appConfigUsersGroupsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
+  private appConfigUsersURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_users/users.json')/ConfigContent`;
+  private appConfigDataURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_data/app_data.json')/ConfigContent`;
 
+  systemConfiguration: any;
+  baseUrl:string;
   config: any = null;
   private userRoles: any = null;
   public usersGroups: any = null;
   public users: any = null;
 
-  constructor(private sharedService: SharedService) {
+  constructor(private sharedService: SharedService, private http: Http) {
+    if (!this.config) {
+      this.systemConfiguration = {
+        // baseUrl: 'http://shelby.corp.toronto.ca:9080'
+        // baseUrl: 'https://was-intra-sit.toronto.ca'
+        baseUrl: environment.apiUrl
+      };
+      if (window.location.hostname !== 'localhost') {
+        // this.systemConfiguration.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+        this.systemConfiguration.baseUrl = '';
+      }
+      sessionStorage.setItem('extract.config', JSON.stringify(this.systemConfiguration));
+      this.baseUrl = this.systemConfiguration.baseUrl;
+      this.appConfigUsersGroupsURL = this.systemConfiguration.baseUrl + this.appConfigUsersGroupsURL;
+      this.appConfigUsersURL = this.systemConfiguration.baseUrl + this.appConfigUsersURL;
+      this.appConfigDataURL = this.systemConfiguration.baseUrl + this.appConfigDataURL;
+
+      this.load(http);
+    }
   }
 
   /**
@@ -119,7 +143,7 @@ export class AppConfig {
             }
           } else {
             for (let index = 0; index < dataSources.length; index++) {
-              let dataSource = dataSources[index];
+              const dataSource = dataSources[index];
 
               // if (this.isSameDataSourceAndDivision(u, dataSource, currentUser.divisions) && u.userID !== currentUser.userID) {
               if (this.isSameDataSourceAndDivision(u, dataSource, currentUser.divisions) && u.role.key !== 'super_admin' && currentUser.role.key !== 'super_admin') {
@@ -287,7 +311,7 @@ export class AppConfig {
 
     if (user.role.key === 'division_admin') {
       let grps = [];
-      for (let index: number = 0; index < groups.length; index++) {
+      for (let index = 0; index < groups.length; index++) {
         let group = groups[index];
         if (!group.value.includes(user.divisions)) {
           groups = this.remove_array_value(groups, group);
@@ -301,9 +325,9 @@ export class AppConfig {
 
   }
 
- getUserIgnoreCase(userID) {
+  getUserIgnoreCase(userID) {
     userID = (userID + '').toLowerCase();
-    for (var u in this.users) {
+    for (let u in this.users) {
       if (this.users.hasOwnProperty(u) && userID == (u + "").toLowerCase()) {
         return this.users[u];
       }
@@ -312,15 +336,15 @@ export class AppConfig {
   }
 
   remove_array_value(array, value) {
-    var index = array.indexOf(value);
+    let index = array.indexOf(value);
     if (index >= 0) {
       array.splice(index, 1);
       return this.reindex_array(array);
     }
   }
   reindex_array(array) {
-    var result = [];
-    for (var key in array) {
+    let result = [];
+    for (let key in array) {
       result.push(array[key]);
     }
     return result;
@@ -366,6 +390,9 @@ export class AppConfig {
                   })
                   .subscribe((usersResponseData) => {
                     this.users = usersResponseData;
+                    if (jQuery.cookie('extract.cot_uname')) {
+                      this.sharedService.user = this.getCurrentUser();
+                    }
                     // console.log(this.users);
                     resolve(true);
                   });

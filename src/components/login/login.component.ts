@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             // that.modal.modal('hide');
           } else if (data.error === 'invalid_user_or_pwd') {
             this.sharedService.block = false;
-            this.authService.displayLoginError('Invalid username or password');
+            this.authService.displayLoginError('Invalid username or password',5000);
           }
 
           this.sharedService.block = false;

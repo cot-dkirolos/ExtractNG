@@ -1,7 +1,7 @@
 import { Configuration, Breadcrumb, BreadcrumbItem } from './../../model/interfaces';
 
 import { Injectable } from '@angular/core';
-import {Message} from 'primeng/primeng';
+import { Message } from 'primeng/primeng';
 
 declare var cot_app: any;
 declare var jQuery: any;
@@ -13,7 +13,7 @@ export class SharedService {
   breadcrumbItems: BreadcrumbItem[];
   block: boolean;
 
-  public paramsToPass:any;
+  public paramsToPass: any;
 
   public user;
 
@@ -25,7 +25,7 @@ export class SharedService {
     if (!jQuery.cookie('fontsize')) {
       jQuery.cookie('fontsize', '1em');
     }
-    console.log(jQuery.cookie('fontsize'));
+    // console.log(jQuery.cookie('fontsize'));
 
   }
 
@@ -52,6 +52,17 @@ export class SharedService {
           const idx = 'excel:smb://'.length;
           url = url.substring(0, idx) + user + ':' + pwd + '@' + url.substring(idx);
         }
+        break;
+
+      case 'access':
+        if (object.hostName.startsWith('//')) {
+          url = 'jdbc:ucanaccess://' + object.hostName + ';jackcessOpener=extract.databases.CryptCodecOpener;';
+        } else {
+          url = 'jdbc:ucanaccess:////netshare.toronto.ca' + object.hostName + ';jackcessOpener=extract.databases.CryptCodecOpener;';
+        }
+        // if (user.length > 0 && pwd.length > 0) {
+        url = url + 'user=' + user + ';password=' + pwd;
+        // }
         break;
 
       case 'sqlserver':
@@ -137,28 +148,28 @@ export class SharedService {
     return 'id_xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxxxxxx'.replace(/[xy]/g,
       (c) => {
         let r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return  v.toString(16);
+        return v.toString(16);
       });
   }
 
-//   b64EncodeUnicode(str) {
-//     // first we use encodeURIComponent to get percent-encoded UTF-8,
-//     // then we convert the percent encodings into raw bytes which
-//     // can be fed into btoa.
-//     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-//         function toSolidBytes(match, p1) {
-//             return String.fromCharCode('0x' + p1);
-//     }));
-// }
+  //   b64EncodeUnicode(str) {
+  //     // first we use encodeURIComponent to get percent-encoded UTF-8,
+  //     // then we convert the percent encodings into raw bytes which
+  //     // can be fed into btoa.
+  //     return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+  //         function toSolidBytes(match, p1) {
+  //             return String.fromCharCode('0x' + p1);
+  //     }));
+  // }
 
-// b64DecodeUnicode(str) {
-//     // Going backwards: from bytestream, to percent-encoding, to original string.
-//     return decodeURIComponent(atob(str).split('').map(function(c) {
-//         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-//     }).join(''));
-// }
+  // b64DecodeUnicode(str) {
+  //     // Going backwards: from bytestream, to percent-encoding, to original string.
+  //     return decodeURIComponent(atob(str).split('').map(function(c) {
+  //         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  //     }).join(''));
+  // }
 
-newObject(object: any) {
+  newObject(object: any) {
     return object ? JSON.parse(JSON.stringify(object)) : null;
   }
 

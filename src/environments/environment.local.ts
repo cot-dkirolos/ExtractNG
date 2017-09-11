@@ -5,6 +5,6 @@
 
 export const environment = {
   production: false,
-  envName: 'dev',
-  apiUrl: ''
+  envName: 'local',
+  apiUrl: 'https://was-intra-sit.toronto.ca'
 };

@@ -16,6 +16,7 @@ export class AuthenticationService {
 
   private loginUrl: string = 'https://insideto-secure.toronto.ca/cc_sr_admin_v1/session';
   // private loginUrl: string = "https://was-intra-sit.toronto.ca/cc_sr_admin_v1/session";
+  // private loginUrl: string = "https://was-intra-qa.toronto.ca/cc_sr_admin_v1/session";
   //user=[USERNAME]&pwd=[PASSWORD]&app=[APPNAME]";
   public appName: string = 'extract';
 
@@ -51,7 +52,7 @@ export class AuthenticationService {
         return res.json();
       })
       .catch((error: any) => {
-        this.displayLoginError('Unable to log in. Please try again.');
+        this.displayLoginError('Unable to log in. Please try again.',5000);
         console.log(error);
         this.sharedService.block = false;
         return Observable.throw(error);
@@ -59,7 +60,7 @@ export class AuthenticationService {
   }
 
   processLogin(data) {
-    console.log(data);
+    // console.log(data);
 
     let date = new Date();
     // Cookie session timeout to password expiry time from AuthSession API otherwise set to 1 hour
@@ -69,7 +70,8 @@ export class AuthenticationService {
     //   date.setTime(date.getTime() + (60 * 60 * 1000));
     // }
 
-      date.setTime(date.getTime() + (60 * 30 * 1000));
+    // set Timeout to 30 minuets
+    date.setTime(date.getTime() + (30 * 60 * 1000));
     jQuery.cookie(this.appName + '.sid', data.sid, { expires: date });
     jQuery.cookie(this.appName + '.cot_uname', data.userID, { expires: date });
     jQuery.cookie(this.appName + '.email', (data.email || '').toLowerCase(), { expires: date });
@@ -101,7 +103,7 @@ export class AuthenticationService {
 
   logout(): void {
     this.sharedService.block = true;
-    console.log('Service LogOut');
+    // console.log('Service LogOut');
     this.clearClientStorage();
     this.sharedService.block = false;
     this.router.navigate(['/login']);
@@ -124,10 +126,10 @@ export class AuthenticationService {
     return !!jQuery.cookie(this.appName + '.sid');
   }
 
-  displayLoginError(s) {
+  displayLoginError(s, fadeOutTime) {
     jQuery('<div class="alert alert-danger" role="alert">' + s + '</div>')
       .prependTo(jQuery('#loginSection').find('#loginModalBody'))
-      .fadeOut(5000, function () {
+      .fadeOut(fadeOutTime || 5000, function () {
         jQuery(this).remove();
       });
   }

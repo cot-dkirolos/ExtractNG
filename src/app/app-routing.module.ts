@@ -3,7 +3,6 @@ import { NewUserPage } from './../pages/new-user/new-user.page';
 import { UpdateConfigPage } from './../pages/update-config/update-config.page';
 import { ConfigListPage } from './../pages/config-list/config-list.page';
 import { CreateConfigPage } from './../pages/create-config/create-config.page';
-import { HomePage } from './../pages/home-page/home.page';
 import { LoginPage } from './../pages/login/login.page';
 import { AuthGuard } from './../providers/auth/auth.guard';
 import { RouterModule, Routes } from '@angular/router';

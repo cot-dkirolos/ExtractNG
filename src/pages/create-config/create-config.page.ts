@@ -44,6 +44,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   statuses: SelectItem[];
   types: SelectItem[];
+  enabledList: SelectItem[];
   dbDefaultes: any;
 
 
@@ -73,6 +74,12 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     // get output file type list
     this.types = [];
     this.types = this.appConfig.config.extractFiletypes;
+
+
+    this.enabledList = [];
+
+    this.enabledList.push({ label: 'Disable', value: false });
+    this.enabledList.push({ label: 'Enable', value: true });
   }
 
   numbersOnly(event: any) {
@@ -89,13 +96,33 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     const st = new Pikaday({
       field: jQuery('#fromTime')[0],
-      format: 'YYYYMMDD',
+      format: 'YYYY-MM-DDTHH:mm:ss',
+      showTime: true,
+      showMinutes: true,
+      showSeconds: true,
+      use24hour: true,
+      incrementHourBy: 1,
+      incrementMinuteBy: 1,
+      incrementSecondBy: 1,
+      autoClose: true,
+      timeLabel: 'Time', // optional string added to left of time select
+
     });
 
 
     const et = new Pikaday({
       field: jQuery('#toTime')[0],
-      format: 'YYYYMMDD',
+      format: 'YYYY-MM-DDTHH:mm:ss',
+      showTime: true,
+      showMinutes: true,
+      showSeconds: true,
+      use24hour: true,
+      incrementHourBy: 1,
+      incrementMinuteBy: 1,
+      incrementSecondBy: 1,
+      autoClose: true,
+      timeLabel: 'Time', // optional string added to left of time select
+
     });
 
 
@@ -123,11 +150,12 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   setBreadCrumb() {
     this.sharedService.setBreadcurmb([
       {
-        name: 'Confirgurations List',
-        link: this.sharedService.contextPath + '/#/home'
+        name: 'Configurations List',
+        // link: this.sharedService.contextPath + './#/home'
+        link: './#/home'
       },
       {
-        name: 'New Confirguration'
+        name: 'New Configuration'
       }
     ], true);
   }
@@ -174,7 +202,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onQueryChange(e) {
-    console.log(e);
+    // console.log(e);
   }
 
   // stop listening to url changes when leave the page
@@ -196,7 +224,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
 
   conTypeChange(event, value) {
-    console.log(JSON.stringify(event) + '-' + value);
+    // console.log(JSON.stringify(event) + '-' + value);
     let found = false;
     if (this.dbDefaultes) {
       for (let index = 0; index < this.dbDefaultes.length; index++) {
@@ -216,12 +244,21 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       this.conf.connection.serviceName = null;
     }
 
+    if(value == 'access'){
+      this.conf.connection.huser = '';
+      this.conf.connection.hpassword = '';
+    }
+
   }
 
   validateURL() {
     this.sharedService.block = true;
     this.refreshConStr();
-    this.extractService.validateURL(this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password)).subscribe(result => {
+    let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
+    if(this.conf.connection.type == 'access'){
+      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    }
+    this.extractService.validateURL(url).subscribe(result => {
       if (result.error) {
         jQuery('#connTestResult').html('<span class="badResultCode">' + result.error + '</span>');
         this.sharedService.block = false;
@@ -247,14 +284,24 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     jQuery('#result').html('<img src="assets/img/ajax_loader.gif">');
     // const timePeriod = jQuery('#timePeriod').val();
     const timePeriod = this.conf.query.timePeriod;
-    const url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
-    const endTime = this.conf.query.fromTime;
-    const startTime = this.conf.query.toTime;
+    let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
+    if(this.conf.connection.type == 'access'){
+      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    }
+    let startTime = this.conf.query.fromTime;
+    let endTime = this.conf.query.toTime;
+    const pmID = this.conf.pmID;
     // const endTime = jQuery('#endTime').val();
     // const startTime = jQuery('#startTime').val();
     // const query = this.editor.getValue();
     const query = this.conf.query.sql;
+
+    // if (this.conf.connection.type && this.conf.connection.type == 'excelsheet' && timePeriod == '') {
+    //   startTime = null;
+    //   endTime = null;
+    // }
     const data = {
+      id: 'id_' + pmID,
       url: url,
       query: query,
       timePeriod: timePeriod,
@@ -272,14 +319,33 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     },
       err => {
         this.sharedService.block = false;
-        jQuery('#result').html('<span class="badResultCode">Unknown error, please try again later</span>');
-        this.showResults(err);
+        if (err['_body'] && typeof err['_body'] == 'string') {
+          jQuery('#result').html('<span class="badResultCode">' + err['_body'] + '</span>');
+        } else {
+          jQuery('#result').html('<span class="badResultCode">Unknown error, please try again later</span>');
+        }
       });
 
   }
 
   showResults(result) {
-    jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
+    // jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
+
+    // if(result.sampleurl){
+    //   jQuery('#resultTitle').html('<a target="_blank" href="' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '">' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '</a>');
+    // }
+    if (result.sampleurls) {
+      let links = '';
+
+      links += '<ul class="list-unstyled">';
+      let host = JSON.parse(sessionStorage.getItem('extract.config')).baseUrl + '/extract';
+      for (var link in result.sampleurls[0]) {
+        links += '<li>' + link + ' <br> ' + '<a target="_blank" style="font-size:small" href="' + host + result.sampleurls[0][link] + '">' + host + result.sampleurls[0][link] + '</a> </li>';
+      }
+      links += '</ul>';
+      jQuery('#resultTitle').html(links);
+    }
+
     const resp = result.data;
     jQuery('#resultSQL').html(result.sql);
     const cols = [];
@@ -299,23 +365,29 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       data: resp,
       manualColumnResize: true,
       colHeaders: colHeads,
-      columns: cols
+      columns: cols,
+      renderAllRows: true,
+      height: 500
     });
 
   }
 
   saveExtract(isValid: boolean, value: any) {
     // block all buttons
-    console.log(value);
+    // console.log(value);
 
     if (isValid) {
       this.sharedService.block = true;
       this.conf = value;
-      this.extractService.checkIfpmIDExist('id_'+this.conf.pmID).then(isExist => {
+      // if (this.conf.connection.type && this.conf.connection.type == 'excelsheet' && this.conf.query.timePeriod == '') {
+      //   this.conf.query.fromTime = null;
+      //   this.conf.query.toTime = null;
+      // }
+      this.extractService.checkIfpmIDExist('id_' + this.conf.pmID).then(isExist => {
 
         if (!isExist) {
 
-          const body = btoa(JSON.stringify(value));
+          const body = btoa(JSON.stringify(this.conf));
           let data;
           if (this.conf.sourceCategory === 'odata') {
             data = {
@@ -325,10 +397,18 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
               APIName: 'aggregator'
             };
           } else {
+
+            let qualifiedName = '';
+
+            if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
+              qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+            } else {
+              qualifiedName = 'Extract/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+            }
             this.conf.dataset = null;
 
             data = {
-              QualifiedName: 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json',
+              QualifiedName: qualifiedName,
               ConfigContent: body,
               ContentType: 'application/json'
             };
@@ -337,10 +417,10 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
           if (data) {
             jQuery('#savedMsg').show();
             jQuery('#savedMsg').html('Saving...');
-            console.log(data);
+            // console.log(data);
             this.extractService.saveExtractConf(data).subscribe(result => {
               this.sharedService.block = false;
-              console.log(result);
+              // console.log(result);
               jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
               jQuery('#savedMsg').fadeOut(3000);
 
@@ -371,7 +451,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   saveExtractConf() {
     this.sharedService.block = true;
-    console.log(this.conf);
+    // console.log(this.conf);
     const d = {
       group: 'this.group',
       id: 'this.id',

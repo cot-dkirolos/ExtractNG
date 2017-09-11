@@ -80,6 +80,8 @@ export interface Connection {
         serviceName?:  string;
         user?:  string;
         password?:  string;
+        huser?:  string;
+        hpassword?:  string;
 }
 
 export interface Query {
@@ -124,4 +126,5 @@ export interface ConfigContent {
   expiryTime?: string;
   connection?: Connection;
   query?: Query;
+  enabled?: boolean;
 }

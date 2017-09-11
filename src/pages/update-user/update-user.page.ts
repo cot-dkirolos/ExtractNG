@@ -27,13 +27,13 @@ export class UpdateUserPage implements OnInit {
     , private confirmationService: ConfirmationService) {
     if (sharedService.paramsToPass && sharedService.paramsToPass.user) {
       this.user = this.sharedService.newObject(sharedService.paramsToPass.user);
-      console.log(this.user);
+      // console.log(this.user);
 
 
       this.setBreadCrumb();
       this.userGroups = [];
       this.userGroups = appConfig.getUserGroupsList(false);
-      console.log(this.user);
+      // console.log(this.user);
 
     } else {
       router.navigate(['/home']);
@@ -51,8 +51,9 @@ export class UpdateUserPage implements OnInit {
   setBreadCrumb() {
     this.sharedService.setBreadcurmb([
       {
-        name: 'Home',
-        link: this.sharedService.contextPath + '/#/home'
+        name: 'Configurations List',
+        // link: this.sharedService.contextPath + '/#/home'
+        link: './#/home'
       },
       {
         name: 'Update User'
@@ -61,7 +62,7 @@ export class UpdateUserPage implements OnInit {
   }
 
   saveUser(isValid, value) {
-    console.log(value);
+    // console.log(value);
 
 
     this.sharedService.block = true;

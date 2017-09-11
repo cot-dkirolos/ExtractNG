@@ -36,8 +36,9 @@ export class NewUserPage implements OnInit {
   setBreadCrumb() {
     this.sharedService.setBreadcurmb([
       {
-        name: 'Home',
-        link: this.sharedService.contextPath + '/#/home'
+        name: 'Configurations List',
+        // link: this.sharedService.contextPath + '/#/home'
+        link: './#/home'
       },
       {
         name: 'New User'
@@ -46,7 +47,7 @@ export class NewUserPage implements OnInit {
   }
 
   saveUser(isValid, value) {
-    console.log(value);
+    // console.log(value);
 
 
     this.sharedService.block = true;

@@ -28,7 +28,7 @@ export class ExtractService {
   }
 
   getExtractByGUID(GUID: string) {
-    let url = `/c3api_config/v2/ConfigService.svc/ConfigSet?$select=QualifiedName,ConfigContent&$filter=endswith(QualifiedName,'{GUID}') and ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
+    let url = `/c3api_config/v2/ConfigService.svc/ConfigSet?$select=QualifiedName,ConfigContent,User,UpdateTime&$filter=endswith(QualifiedName,'{GUID}') and ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
     let link = url.replace('{GUID}', '/' + GUID + '.json');
     // console.log(link);
     return this.httpService.get(link)

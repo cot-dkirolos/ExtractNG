@@ -9,6 +9,8 @@ if (environment.production) {
   enableProdMode();
 }
 // jQuery(() => platformBrowserDynamic().bootstrapModule(AppModule));
-platformBrowserDynamic().bootstrapModule(AppModule,[{
-  useValue: '/ExtractNG'
-}]);
+// platformBrowserDynamic().bootstrapModule(AppModule, [{
+//   useValue: '/ExtractNG'
+// }]);
+
+platformBrowserDynamic().bootstrapModule(AppModule);

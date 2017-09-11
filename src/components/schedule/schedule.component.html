@@ -1,0 +1,292 @@
+<p class="text-right">
+    <span id='savedMsg'></span>
+    <button pButton icon="fa-floppy-o" id='scheduleSaveBtn' style="margin: 0;" label="Save Schedule" [disabled]="sharedService.block"></button>
+</p>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Schedule</h3>
+    </div>
+
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="sourceCategory">Excecution Type</label>
+                    <p-selectButton (onChange)="scheduleTypeCange($event)" [options]="scheduleTypes" [ngModel]="schedule?.scheduleConfig.type" (ngModelChange)="schedule ? schedule.scheduleConfig.type=$event : null" name="scheduleType" inputId="scheduleType" [style]="{'width':'100%'}"></p-selectButton>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="scheduleStatus">Status</label>
+                    <p-toggleButton onLabel="Enabled" offLabel="Disabled" name="scheduleEnabled" inputId="scheduleEnabled" onIcon="fa-check-square" offIcon="fa-square-o" [ngModel]="schedule?.scheduleConfig.scheduleEnabled" (ngModelChange)="schedule ? schedule.scheduleConfig.scheduleEnabled=$event : null"
+                        [style]="{    'display': 'table'}"></p-toggleButton>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row" *ngIf="schedule.scheduleConfig.type == 'once'">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">Execution Time</label>
+                    <input pInputText id='snglExecTime' class="form-control" [ngModel]="schedule?.scheduleConfig.snglExecTime" (ngModelChange)="schedule? schedule.scheduleConfig.snglExecTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="snglExecTime" size=8>
+
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="schedule.scheduleConfig.type == 'recurring'">
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="form-group">
+                        <label for="idField">Start Time</label>
+                        <input pInputText id='schedStartTime' class="form-control" [ngModel]="schedule?.scheduleConfig.recurrence.schedStartTime" (ngModelChange)="schedule? schedule.scheduleConfig.recurrence.schedStartTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedStartTime" size=8>
+
+                    </div>
+                </div>
+                <!-- <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="idField">End Time (Optional)</label>
+                    <input pInputText id='schedEndTime' class="form-control" [ngModel]="schedule?.schedEndTime" (ngModelChange)="schedule? schedule.schedEndTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedEndTime" size=8>
+
+                </div>
+            </div> -->
+            </div>
+            <div *ngIf="schedule.scheduleConfig.type == 'recurring'">
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="idField">Recur every</label>
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6">
+                                    <p-spinner id='schedInterval' [formatInput]="false" maxlength="7" [style]="{'width':'100%'}" [min]="1" [max]="2592000" [step]="1" [ngModel]="schedule?.scheduleConfig.recurrence.interval" (ngModelChange)="schedule? schedule.scheduleConfig.recurrence.interval=$event : null" name="schedInterval"
+                                        placeholder="Intereval">
+                                    </p-spinner>
+                                </div>
+                                <div class="col-xs-12 col-md-6">
+                                    <p-dropdown (onChange)="recurrenceFrequencyCange($event)" [options]="recurEvery" [ngModel]="schedule?.scheduleConfig.recurrence.frequency" (ngModelChange)="schedule ? schedule.scheduleConfig.recurrence.frequency=$event : null" name="executionType" inputId="executionType" [style]="{'width':'100%'}">
+                                    </p-dropdown>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" *ngIf="schedule?.scheduleConfig.recurrence.frequency == 'months'">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="idField">Days</label>
+                            <p-multiSelect [options]="monthDays" defaultLabel="Select month day(s)" [filter]="false" [(ngModel)]="schedule.scheduleConfig.recurrence.monthDays" [style]="{'width': '100%'}" [overlayVisible]="true" selectedItemsLabel="{0} days selected"></p-multiSelect>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="schedule?.scheduleConfig.recurrence.frequency == 'weeks'">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="idField">Days</label>
+                            <p-listbox [style]="{'width':'100%', 'height': '290px'}" [showToggleAll]="true" [options]="weekDays" [(ngModel)]="schedule.scheduleConfig.recurrence.weekDays" multiple="multiple" checkbox="checkbox"></p-listbox>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row" *ngIf="schedule?.scheduleConfig.recurrence.frequency == 'days' || schedule?.scheduleConfig.recurrence.frequency == 'weeks' || schedule?.scheduleConfig.recurrence.frequency == 'months' ">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="idField">Time <button pButton type="button" icon="fa-plus" (click)="addTime()" class="ui-button-secondary"></button></label>
+                            <div *ngFor="let row of schedule?.scheduleConfig.recurrence.hhmm; let i = index" style="padding-bottom: 5px;">
+                                <p-calendar readonlyInput="true" dataType="string" [(ngModel)]="row.time" [timeOnly]="true" name="time" [style]="{'width':schedule?.scheduleConfig.recurrence.hhmm.length > 1 ? 'calc(100% - 40px)' : '100%'}"></p-calendar>
+                                <button pButton type="button" icon="fa-close" *ngIf="schedule?.scheduleConfig.recurrence.hhmm.length > 1" (click)="deleteTime(i)" class="ui-button-danger"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="executionEndType"></label>
+                            <p-selectButton (onChange)="executionEndTypeCange($event)" [options]="executionEndType" [(ngModel)]="endType" name="executionEndType" inputId="executionEndType" [style]="{'width':'100%'}"></p-selectButton>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" [hidden]="endType == 'N'">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="form-group">
+                            <label for="schedEndTime" *ngIf="endType == 'E' "> End time </label>
+                            <input pInputText *ngIf="endType == 'E' " id='schedEndTime' class="form-control" [ngModel]="schedule?.scheduleConfig.recurrence.schedEndTime" (ngModelChange)="schedule? schedule.scheduleConfig.recurrence.schedEndTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedEndTime"
+                                size=8>
+
+                            <label for="schedEndTime" *ngIf="endType == 'O' ">Number of times </label>
+                            <p-spinner *ngIf="endType == 'O'" id='schedEndTimeSpinner' [ngModel]="schedule?.scheduleConfig.recurrence.schedEndTime" (ngModelChange)="schedule? schedule.scheduleConfig.recurrence.schedEndTime=$event : null" [formatInput]="false" maxlength="3" [style]="{'width':'100%'}" [min]="1"
+                                [max]="999" [step]="1" name="schedEndTime" placeholder="schedEndTime">
+                            </p-spinner>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Execution Parameters Meta-data</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">Extract ID</label>
+                    <input type="text" pInputText [ngModel]="conf?.pmID" [readonly]="true" (ngModelChange)="conf ? conf.pmID=$event : null" name="schedulePmID" class="form-control" id="schedulePmId" placeholder="Extract ID" [required]="true" #schedulePmID="ngModel">
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                    <label for="aggregationPeriods">Aggregation Period</label>
+                    <p-dropdown [options]="periods" [(ngModel)]="schedule?.execParams.deltaParams.aggrPeriod" name="aggregationPeriods" inputId="aggregationPeriods" [style]="{'width':'100%'}"></p-dropdown>
+
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-4" *ngIf="schedule.scheduleConfig.type == 'once'">
+                <div class="form-group">
+                    <label for="paramStartTime">Start</label>
+                    <input pInputText id='paramStartTime' class="form-control" [ngModel]="schedule?.execParams.deltaParams.fromTime" (ngModelChange)="schedule? schedule?.execParams.deltaParams.fromTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="paramStartTime" size=8>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-4" *ngIf="schedule.scheduleConfig.type == 'once'">
+                <div class="form-group">
+                    <label for="paramEndTime">End</label>
+                    <input pInputText id="paramEndTime" class="form-control" [ngModel]="schedule?.execParams.deltaParams.toTime" (ngModelChange)="schedule? schedule?.execParams.deltaParams.toTime=$event : null" name="paramEndTime" placeholder="yyyy-MM-ddThh:mm:ss" size=8>
+                </div>
+            </div>
+
+
+            <div class="col-xs-12 col-md-4" *ngIf="schedule.scheduleConfig.type != 'once'">
+                <div class="form-group">
+                    <label for="rangeUnits">Range</label>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p-spinner (onChange)="setDateRange()" id='rangeUnits' [formatInput]="false" maxlength="7" [style]="{'width':'100%'}" [min]="1" [max]="2592000" [step]="1" [ngModel]="schedule?.execParams.deltaParams.rangeUnits" (ngModelChange)="schedule? schedule.execParams.deltaParams.rangeUnits=$event : null"
+                                name="rangeUnits" placeholder="Number of units">
+                            </p-spinner>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <p-dropdown (onChange)="setDateRange()" [options]="rangePeriods" [(ngModel)]="schedule?.execParams.deltaParams.rangePeriod" name="rangePeriod" inputId="rangePeriod" [style]="{'width':'100%'}"></p-dropdown>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-4" *ngIf="schedule.scheduleConfig.type != 'once'">
+                <div class="form-group">
+                    <label for="deltaEndTime">End Time = current time - {{schedule?.execParams.deltaParams.deltaEndTime}} {{schedule?.execParams.deltaParams.rangePeriod}}</label>
+
+                    <p-spinner (onChange)="setDateRange()" id='deltaEndTime' [formatInput]="false" maxlength="7" [style]="{'width':'100%'}" [min]="0" [max]="9999999" [step]="1" [(ngModel)]="schedule?.execParams.deltaParams.deltaEndTime" name="deltaEndTime" inputId="deltaEndTime"
+                        placeholder="Number of units">
+                    </p-spinner>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="schedule.scheduleConfig.type != 'once'">
+
+            <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                    <label for="paramStartTimeRo">Start Time</label>
+                    <input pInputText id='paramStartTimeRo' class="form-control" [ngModel]="startTimeRO | date: 'yyyy/MM/dd HH:mm:ss'" placeholder="yyyy-MM-ddThh:mm:ss" name="startTimeRO" [readonly]="true">
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-md-4">
+                <div class="form-group">
+                    <label for="paramEndTimeRo">End Time</label>
+                    <input pInputText id='paramEndTimeRo' class="form-control" [ngModel]="endTimeRO | date: 'yyyy/MM/dd HH:mm:ss'" placeholder="yyyy-MM-ddThh:mm:ss" name="endTimeRO" [readonly]="true">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Extract data to</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <label for="targetType">Target Type</label>
+                <p-dropdown [options]="targetTypes" (onChange)="targetTypeOnChange($event)" [ngModel]="schedule?.execParams.target.targetType" (ngModelChange)="schedule ? schedule.execParams.target.targetType=$event : null" name="targetType" inputId="targetType" [style]="{'width':'100%'}">
+                </p-dropdown>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="outputFormat">Output Format</label>
+                    <p-dropdown [options]="outputFormats" [ngModel]="schedule?.execParams.target.outputFormat" (ngModelChange)="schedule ? schedule.execParams.target.outputFormat=$event : null" name="outputFormat" inputId="outputFormat" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="schedule.execParams.target.targetType && schedule.execParams.target.targetType != ''">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="targetDirectory">Directory</label>
+                        <input id="targetDirectory" name="directory" type="text" class="form-control" [ngModel]="schedule?.execParams.target.directory" (ngModelChange)="schedule ? schedule.execParams.target.directory=$event : null">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="targetUser">{{schedule.execParams.target.targetType == 'netshare'? 'User' : 'Access ID'}}</label>
+                        <input id="targetUser" name="targetUser" type="text" class="form-control" size="35" [ngModel]="schedule?.execParams.target.id" (ngModelChange)="schedule ? schedule.execParams.target.id=$event : null">
+                    </div>
+                </div>
+
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="targetPwd">{{schedule.execParams.target.targetType == 'netshare'? 'Password' : 'Access Key'}}</label>
+                        <input type="password" id='targetPwd' name="targetPwd" class="form-control" size="35" [ngModel]="schedule?.execParams.target.key" (ngModelChange)="schedule ? schedule.execParams.target.key=$event : null">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" *ngIf="schedule.execParams.target.targetType == 's3'">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="bucketRegion">Bucket Region</label>
+                        <input id="bucketRegion" name="bucketRegion" type="text" class="form-control" size="35" [ngModel]="schedule?.execParams.target.bucketRegion" (ngModelChange)="schedule ? schedule.execParams.target.bucketRegion=$event : null">
+                    </div>
+                </div>
+
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label for="bucketName">Bucket Name</label>
+                        <input id="bucketName" name="bucketName" type="text" class="form-control" size="35" [ngModel]="schedule?.execParams.target.bucketName" (ngModelChange)="schedule ? schedule.execParams.target.bucketName=$event : null">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<pre>{{schedule | json }}</pre>

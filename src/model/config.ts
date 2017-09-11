@@ -1,7 +1,7 @@
 import { SharedService } from './../providers/shared/shared.service';
 import { ConfigContent, Connection, Query } from './interfaces';
 
-export class Configuration implements ConfigContent{
+export class Configuration implements ConfigContent {
 
   pmID: string;
   name: string;
@@ -19,19 +19,24 @@ export class Configuration implements ConfigContent{
   expiryTime?: string;
   connection?: Connection;
   query?: Query;
+  enabled?: boolean;
 
-  constructor(public id: string){
+  constructor(public id: string) {
     this.id = id;
     this.pmID = '';
     this.type = 'json';
     this.status = 'active';
+    this.enabled = false;
 
     this.connection = {};
 
     this.query = {
-       sql: '',
-    timePeriod:  'M'
-  };
+      sql: '',
+      timePeriod: 'M'
+      // ,
+      // fromTime: '',
+      // toTime: '',
+    };
   }
 }
 

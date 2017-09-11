@@ -1,3 +1,4 @@
+import { MsToTimePipe } from './../pipes/msToTime.pipe';
 import { DataTableModule } from './../components/datatable/datatable.component';
 import { PaginatorModule } from './../components/paginator/paginator.component';
 import { UpdateUserPage } from './../pages/update-user/update-user.page';
@@ -6,7 +7,7 @@ import { UpdateConfigPage } from './../pages/update-config/update-config.page';
 import { AppConfig } from './../providers/app-config/app-config.service';
 import { ConfigListPage } from './../pages/config-list/config-list.page';
 import { CreateConfigPage } from './../pages/create-config/create-config.page';
-import { CalendarModule } from './../components/calendar/calendar.component';
+// import { CalendarModule } from './../components/calendar/calendar.component';
 import { ObjectUtils } from './../providers/utils/object-utils';
 import { DropdownModule } from './../components/dropdown/dropdown.component';
 import { AceEditorComponent } from './../components/ace-editor/ace-editor.component';
@@ -17,7 +18,7 @@ import { ErrorHandlerService } from './../providers/error-handler/error-handler.
 import { Router, ActivatedRouteSnapshot } from '@angular/router';
 import { HttpService } from './../providers/http/http.service';
 import { CUSTOM_ELEMENTS_SCHEMA, APP_INITIALIZER, NgModule, ErrorHandler } from '@angular/core';
-import { FooterComponent, HeaderComponent, LoginComponent } from '../components/index';
+import { FooterComponent, HeaderComponent, LoginComponent, ScheduleComponent} from '../components/index';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { HttpModule, RequestOptions, XHRBackend, Http } from '@angular/http';
@@ -28,13 +29,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
-import { HomePage, LoginPage } from '../pages/index';
+import { LoginPage } from '../pages/index';
 import { SharedService } from './../providers/index';
 // import { LAceEditorModule } from 'angular2-ace';
 import {
   InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule,
   InputTextModule, ButtonModule, PanelModule,  SharedModule, MultiSelectModule, TabViewModule,
-  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule,MenuModule
+  ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule,MenuModule,InputSwitchModule,
+  ToggleButtonModule, SelectButtonModule,ListboxModule,CalendarModule
 } from 'primeng/primeng';
 
 export function httpFactory(backend: XHRBackend, options: RequestOptions, router: Router, sharedService: SharedService) {
@@ -52,17 +54,16 @@ export function initConfig(config: AppConfig, httpService: Http) {
     FooterComponent,
     LoginComponent,
     LoginPage,
-    HomePage,
     AceEditorComponent,
     CreateConfigPage,
     UpdateConfigPage,
     ConfigListPage,
     NewUserPage,
-    UpdateUserPage
+    UpdateUserPage,ScheduleComponent,
+    MsToTimePipe
   ],
   entryComponents: [
     LoginPage,
-    HomePage,
     CreateConfigPage,
     UpdateConfigPage,
     ConfigListPage,
@@ -80,7 +81,7 @@ export function initConfig(config: AppConfig, httpService: Http) {
     InputTextModule, ButtonModule,
     InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule, CalendarModule,
     PanelModule, DataTableModule, SharedModule, MultiSelectModule, DropdownModule, TabViewModule,ConfirmDialogModule,
-    GrowlModule,MessagesModule,PaginatorModule,TooltipModule,MenuModule
+    GrowlModule,MessagesModule,PaginatorModule,TooltipModule,MenuModule,InputSwitchModule,ToggleButtonModule,SelectButtonModule,ListboxModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [AuthenticationService, ExtractService, ObjectUtils,ConfirmationService,
@@ -99,7 +100,7 @@ export function initConfig(config: AppConfig, httpService: Http) {
     {
       provide: APP_INITIALIZER,
       useFactory: initConfig,
-      deps: [AppConfig,Http],
+      deps: [AppConfig, Http],
       multi: true
     }
   ],

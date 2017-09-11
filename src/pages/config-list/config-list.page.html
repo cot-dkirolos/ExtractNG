@@ -6,19 +6,35 @@
         </section>
         <section id="app-content-left" class="col-xs-12">
             <div>
-                <p-tabView #tabView (onChange)="handleTabChange($event)">
+
+                <p-tabView #tabView [style]="{'min-width':'1046px'}" (onChange)="handleTabChange($event)">
                     <!--<button pButton type="button" *ngIf="tabView.tabs ? tabView.tabs.length > 0 : false" class="ui-button-success" label="New" icon="fa-plus" (click)="navigateToNew()" style="float: right;margin-top: 5px;"></button>-->
 
-                    <p-tabPanel header="Extracts" leftIcon="fa-database" *ngIf="sharedService.user.role.roles.views?.configListView">
+                    <p-tabPanel header="Extracts" leftIcon="fa-database" [hidden]="!sharedService.user.role.roles.views?.configListView">
 
-                        <p-dataTable #dt [value]="configurationList" [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,20,40,80,200]" [responsive]="true" role="region" id="divisionsDT" aria-live="polite" [loading]="loading" selectionMode="single" [(selection)]="selectedConf">
+                        <p-dataTable #dt  [ellipsis]="true" loadingIcon="fa-spinner" [value]="configurationList" [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,15,20,25,30]" [responsive]="true" role="region" id="divisionsDT" aria-live="polite" [loading]="loading" selectionMode="single" [(selection)]="selectedConf">
                             <p-header>
 
                                 <span>Extracts Matrix</span>
-                                <div style="float:right">
+                                <div style="float:right"> <span id='savedMsg'></span>
                                     <button pButton *ngIf="sharedService.user.role.roles.configListView.showNewConfigButton" type="button" class="ui-button-success" label="New Extract" icon="fa-plus" (click)="navigateToNew('epm')" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
                                 </div>
                             </p-header>
+                            <p-footer *ngIf="configurationList.length && configurationList.length > 0">There are <strong>{{configurationList.length}}</strong> Configurations</p-footer>
+
+                            <p-column styleClass="col-button" header="Enabled" field="enabled"
+                                      [sortable]="true" [filter]="false" [style]="{'width':'89px','text-align':'center'}">
+                                <ng-template let-conf="rowData" pTemplate="body">
+                                    <label for="enabled" class="ui-helper-hidden-accessible">Enabled</label>
+                                    <p-toggleButton [disabled]="sharedService.block||true" (onChange)="toggleEnable($event,conf)"
+                                    onLabel="" offLabel="" name="enabled" inputId="enabled"
+                                     onIcon="fa-check-square" offIcon="fa-square-o"
+                                     [ngModel]="conf?.enabled" (ngModelChange)="conf ? conf.enabled=$event : null">
+                                     <!-- [style]="{'color': '#000000','background-color': '#ffffff','border': '1px solid #cccccc'}"> -->
+                                    </p-toggleButton>
+                                </ng-template>
+                            </p-column>
+
                             <p-column field="pmID" [sortable]="true" [filter]="true" [style]="{'width':'145px'}">
                                 <ng-template pTemplate="filter" let-col>
                                     <label for="idFilter">Extract ID</label>
@@ -44,7 +60,8 @@
                                     <input type="text" id="divisionFilter" (keyup)="dt.filter($event.target.value,col.field,col.filterMatchMode)" placeholder="Division" pInputText>
                                 </ng-template>
                             </p-column>
-                            <p-column field="sourceCategory" [sortable]="true" [filter]="true" [style]="{'width':'150px'}">
+                            <!-- <p-column field="sourceCategory" [sortable]="true" [filter]="true" [style]="{'width':'150px'}"> -->
+                            <p-column field="sourceCategory" [sortable]="true" [filter]="true" [style]="{'width':'122px'}">
                                 <ng-template pTemplate="filter" let-col>
                                     <label for="categoryFilter">Category</label>
                                     <!--<p-dropdown [options]="appConfig.getSourceCategoryList(true)" id="categoryFilter" [style]="{'width':'100%'}" (onChange)="dt.filter($event.value,col.field,col.filterMatchMode)" styleClass="ui-column-filter"></p-dropdown>-->
@@ -52,10 +69,10 @@
                                 </ng-template>
                             </p-column>
 
-                            <p-column header="Action" styleClass="col-button" [style]="{'text-align':'center'}" *ngIf="sharedService.user.role.roles.configListView.showConfigButton">
-                                <ng-template let-conf="rowData" pTemplate="body">
+                            <p-column header="Action" styleClass="col-button" [style]="{'text-align':'center','width': '139px'}" *ngIf="sharedService.user.role.roles.configListView.showConfigButton">
+                                <ng-template let-conf="rowData" pTemplate="body"  let-index="rowIndex">
                                     <p-menu #menu popup="true" [value]="conf" appendTo="body" [data]="conf" [model]="items"></p-menu>
-                                    <button type="button" pButton class="ui-button-secondary" icon="fa fa-list" label="Actions" (click)="dt.selectRowWithRadio($event, conf);menu.toggle($event)"></button>
+                                    <button type="button" pButton class="ui-button-secondary" icon="fa fa-list" label="Actions" (click)="!dt.isSelected(conf) ? dt.selectRowWithRadio($event, conf): '' ;menu.toggle($event)"></button>
                                     <!--<p-splitButton label="Actions" icon="fa-check" [model]="items"></p-splitButton>-->
                                     <!--<button type="button" pButton icon="fa-cog" class="ui-button-secondary" (click)="navigateToModify(conf)" label="Configure"></button>-->
                                 </ng-template>
@@ -66,7 +83,7 @@
 
                     <p-tabPanel header="Users" leftIcon="fa-users" *ngIf="sharedService.user.role.roles.views?.userListView">
 
-                        <p-dataTable #udt [value]="usersList" [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,20,40,80,200]" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
+                        <p-dataTable #udt [value]="usersList" [rows]="5" [paginator]="true" [pageLinks]="5" [rowsPerPageOptions]="[5,10,15,20,25,30]" [responsive]="true" role="region" id="divisionsDT" aria-live="polite">
                             <p-header>
 
                                 <span>Users List</span>
@@ -74,6 +91,7 @@
                                     <button pButton *ngIf="sharedService.user.role.roles.userListView?.showNewUserButton" type="button" class="ui-button-success" label="New User" [routerLink]="['/newUser']" icon="fa-user-plus" style="margin: 0px; margin-top: -3px;padding: 0;"></button>
                                 </div>
                             </p-header>
+                            <p-footer *ngIf="usersList.length && usersList.length > 0">There are <strong>{{usersList.length}}</strong> Users</p-footer>
                             <p-column field="userID" [sortable]="true" [filter]="true" [style]="{'width':'175px'}">
                                 <ng-template pTemplate="filter" let-col>
                                     <label for="uIdFilter">User ID</label>

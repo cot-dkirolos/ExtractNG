@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ConfigurationListObj, Schedule, ConfigContent } from './../../model/interfaces';
 import { ExtractService } from './../../providers/extract/extract.service';
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { SelectItem, MenuItem, TabView } from 'primeng/primeng';
+import { SelectItem, MenuItem, TabView, Message } from 'primeng/primeng';
 import * as moment from 'moment';
 declare var jQuery: any;
 declare var Pikaday: any;
@@ -18,6 +18,8 @@ declare var Pikaday: any;
 export class ConfigListPage implements OnInit, AfterViewInit {
 
   @ViewChild('tabView') tv: TabView;
+
+  msg: Message[] = [];
 
   loading: boolean;
 
@@ -70,62 +72,63 @@ export class ConfigListPage implements OnInit, AfterViewInit {
         u.dataSources = categories;
       }
     }
-    console.log(this.sharedService.user);
+    // console.log(this.sharedService.user);
 
   }
 
   ngOnInit() {
-    this.sharedService.setBreadcurmb([{ name: 'Confirgurations List', link: '/#/home' }], true);
-      this.loading = true;
-      this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions).then(result => {
-        
-        // let rs = this.configurationList;
+    this.sharedService.setBreadcurmb([{ name: 'Configurations List', link: './#/home' }], true);
+    this.loading = true;
+    this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions).then(result => {
+      this.sharedService.block = false;
 
-        // console.log("result:" + rs + ',length:' + rs.length);
-        // let finalList = [];
-        // for (var index = 0; index < rs.length; index++) {
-        //   let element = rs[index];
+      // let rs = this.configurationList;
 
-        //   if (element.sourceCategory === 'OpenData') {
-        //     element.sourceCategory = 'odata';
-        //   } else {
-        //     element.sourceCategory = 'epm';
-        //   }
+      // console.log("result:" + rs + ',length:' + rs.length);
+      // let finalList = [];
+      // for (var index = 0; index < rs.length; index++) {
+      //   let element = rs[index];
+
+      //   if (element.sourceCategory === 'OpenData') {
+      //     element.sourceCategory = 'odata';
+      //   } else {
+      //     element.sourceCategory = 'epm';
+      //   }
 
 
 
-        //   // console.log(element);
-        //   const body = btoa(JSON.stringify(element));
-        //   let data = null;
-        //   if (element.sourceCategory === 'epm') {
-        //     data = {
-        //       QualifiedName: 'Extract/EPM_' + element.group + '/id_' + element.pmID + '.json',
-        //       ConfigContent: body,
-        //       ContentType: 'application/json'
-        //     };
-        //     finalList.push(data);
-        //   }
-        // }
-        // console.log(finalList.length);
+      //   // console.log(element);
+      //   const body = btoa(JSON.stringify(element));
+      //   let data = null;
+      //   if (element.sourceCategory === 'epm') {
+      //     data = {
+      //       QualifiedName: 'Extract/EPM_' + element.group + '/id_' + element.pmID + '.json',
+      //       ConfigContent: body,
+      //       ContentType: 'application/json'
+      //     };
+      //     finalList.push(data);
+      //   }
+      // }
+      // console.log(finalList.length);
 
-        // for (let index = 0; index < finalList.length; index++) {
-        //   const content = finalList[index];
-        //   const configContent = JSON.parse(atob(content.ConfigContent));
-        //   this.extractService.checkIfpmIDExist('id_'+configContent.pmID).then(result => {
-        //     console.log("Config ID : " + configContent.pmID + ", Exist:" + result);
-        //     if (!result) {
-        //       this.extractService.saveExtractConf(content).subscribe(result => {
-        //         this.sharedService.block = false;
-        //         console.log(result);
-        //       },
-        //         err => {
-        //           this.sharedService.block = false;
-        //           console.error(err.json());
-        //         });
-        //     }
-        //   });
-        // }
-      });
+      // for (let index = 0; index < finalList.length; index++) {
+      //   const content = finalList[index];
+      //   const configContent = JSON.parse(atob(content.ConfigContent));
+      //   this.extractService.checkIfpmIDExist('id_'+configContent.pmID).then(result => {
+      //     console.log("Config ID : " + configContent.pmID + ", Exist:" + result);
+      //     if (!result) {
+      //       this.extractService.saveExtractConf(content).subscribe(result => {
+      //         this.sharedService.block = false;
+      //         console.log(result);
+      //       },
+      //         err => {
+      //           this.sharedService.block = false;
+      //           console.error(err.json());
+      //         });
+      //     }
+      //   });
+      // }
+    });
 
 
   }
@@ -141,10 +144,12 @@ export class ConfigListPage implements OnInit, AfterViewInit {
         for (let index = 0; index < list.value.length; index++) {
           const conf = list.value[index];
           const tempConf = JSON.parse(window.atob(conf.ConfigContent));
-          const src = (<string>conf.GroupName).substr(0, (<string>conf.GroupName).indexOf('_')).toLowerCase();
+          // const src = (<string>conf.GroupName).substr(0, (<string>conf.GroupName).indexOf('_')).toLowerCase();
+          const src = (<string>tempConf.sourceCategory.toLowerCase());
 
           tempConf.sourceCategory = this.appConfig.getSourceCategoryLabel(src);
-          tempConf.division = this.appConfig.getDivisionLabel((<string>conf.GroupName).substr((<string>conf.GroupName).indexOf('_') + 1).toLowerCase());
+          // tempConf.division = this.appConfig.getDivisionLabel((<string>conf.GroupName).substr((<string>conf.GroupName).indexOf('_') + 1).toLowerCase());
+          tempConf.division = this.appConfig.getDivisionLabel(tempConf.group.toLowerCase());
           cs.push(tempConf);
         }
         this.configurationList = cs;
@@ -182,9 +187,9 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   navigateToModify(conf) {
 
-    console.log(conf);
+    // console.log(conf);
     let id = '';
-    if (conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata') {
+    if (conf.sourceCategory.toLowerCase() === 'odata' || conf.sourceCategory.toLowerCase() == 'opendata') {
       id = conf.dataset;
     } else {
       id = conf.id;
@@ -209,7 +214,7 @@ export class ConfigListPage implements OnInit, AfterViewInit {
     if (configToClone.sourceCategory && (configToClone.sourceCategory.toLowerCase() == 'odata' || configToClone.sourceCategory.toLowerCase() == 'opendata')) {
       configToClone.sourceCategory = 'odata';
     } else {
-      if(configToClone.sourceCategory){
+      if (configToClone.sourceCategory) {
         configToClone.sourceCategory = configToClone.sourceCategory.toLowerCase();
 
       }
@@ -226,10 +231,72 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   getUserIgnoreCase(userID) {
     userID = (userID + '').toLowerCase();
-    for (var u in this.appConfig.users) {
-      if (this.appConfig.users.hasOwnProperty(u) && userID == (u + "").toLowerCase()) {
+    for (let u in this.appConfig.users) {
+      if (this.appConfig.users.hasOwnProperty(u) && userID == (u + '').toLowerCase()) {
         return this.appConfig.users[u];
       }
+    }
+
+  }
+
+  toggleEnable(e, conf) {
+    this.sharedService.block = true;
+    const body = btoa(JSON.stringify(conf));
+    let data;
+    let qualifiedName;
+    // if (conf.sourceCategory === 'odata' ) {
+    if (conf.sourceCategory === 'odata' || conf.sourceCategory === 'OpenData' ) {
+      qualifiedName = 'Extract/OData_' + conf.group + '/aggregator/' + conf.dataset + '.json';
+      data = {
+        QualifiedName: qualifiedName,
+        ConfigContent: body,
+        ContentType: 'application/json',
+        APIName: 'aggregator'
+      };
+    } else {
+      conf.dataset = null;
+      qualifiedName = 'Extract/EPM_' + conf.group + '/id_' + conf.pmID + '.json';
+
+      data = {
+        QualifiedName: qualifiedName,
+        ConfigContent: body,
+        ContentType: 'application/json'
+      };
+
+    }
+    if (data) {
+      jQuery('#savedMsg').show();
+      jQuery('#savedMsg').html('Saving...');
+      // console.log(data);
+      this.extractService.updateExtractConf(qualifiedName, data).subscribe(result => {
+        this.sharedService.block = false;
+
+        this.msg.push({
+          severity: 'success', summary: 'Saved', detail: 'Extract configuration ' +
+            (conf.enabled ? 'enabled' : 'disabled') + ' successfully'
+        });
+        this.sharedService.msgs = this.msg;
+        // console.log(result);
+        jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
+        jQuery('#savedMsg').fadeOut(3000);
+        this.msg = [];
+
+      },
+        err => {
+          this.sharedService.block = false;
+          console.log(err.json());
+          this.msg.push({ severity: 'error', summary: 'Failed', detail: 'Failed to ' +
+          (conf.enabled ? 'enable' : 'disable' ) + ' the Extract configuration, ' + err.json().error.message });
+          this.sharedService.msgs = this.msg;
+          jQuery('#savedMsg').html('<span class="badResultCode">' + err.json().error.message + '</span>');
+          // jQuery('#savedMsg').html('<span class="badResultCode">Could not save, please try again later.</span>');
+
+          // jQuery('#savedMsg').fadeOut(3000);
+          this.msg = [];
+          conf.enabled = !conf.enabled;
+        });
+    } else {
+      this.sharedService.block = false;
     }
 
   }

@@ -1,0 +1,182 @@
+<p class="text-right">
+    <span id='savedMsg'></span>
+    <button pButton icon="fa-floppy-o" id='scheduleSaveBtn' style="margin: 0;" label="Save Schedule" [disabled]="sharedService.block"></button>
+</p>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Schedule Meta-data</h3>
+    </div>
+
+    <div class="panel-body">
+
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">Extract ID</label>
+                    <input type="text" pInputText [ngModel]="conf?.pmID" [readonly]="true" (ngModelChange)="conf ? conf.pmID=$event : null" name="schedulePmID" class="form-control" id="schedulePmId" placeholder="Extract ID" [required]="true" #schedulePmID="ngModel">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- <div class="col-xs-12 col-md-6">
+                <label for="sourceCategory">Schedule Status</label>
+                <p-dropdown [options]="statuses" [ngModel]="schedule?.status" (ngModelChange)="schedule ? schedule.status=$event : null" name="scheduleStatus" inputId="scheduleStatus" [style]="{'width':'100%'}">
+                </p-dropdown>
+            </div> -->
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="sourceCategory">Schedule Type</label>
+                    <p-selectButton [options]="scheduleTypes"[ngModel]="schedule?.type" (ngModelChange)="schedule ? schedule.type=$event : null" name="scheduleType" inputId="scheduleType" [style]="{'width':'100%'}"></p-selectButton>
+                    <!-- <p-dropdown [options]="scheduleTypes" [ngModel]="schedule?.type" (ngModelChange)="schedule ? schedule.type=$event : null" name="scheduleType" inputId="scheduleType" [style]="{'width':'100%'}">
+                    </p-dropdown> -->
+                </div>
+            </div>
+        </div>
+        <div class="ui-g">
+            <div class="ui-g-12">
+
+                <label for="scheduleStatus" class="ui-helper-hidden-accessible">Enabled for Active Data Integration</label>
+                <p-toggleButton onLabel="Enabled for Active Data Integration" offLabel="Disabled for Active Data Integration"
+                name="scheduleEnabled" inputId="scheduleEnabled" onIcon="fa-check-square" offIcon="fa-square-o"
+                [ngModel]="schedule?.scheduleEnabled" (ngModelChange)="schedule ? schedule.scheduleEnabled=$event : null"></p-toggleButton>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" [hidden]="schedule.type != 'once'">
+    <div class="panel-heading">
+        <h3 class="panel-title">Schedule Execution Details - Single Execution</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">Execution Time</label>
+                    <input pInputText id='snglExecTime' class="form-control" [ngModel]="schedule?.snglExecTime" (ngModelChange)="schedule? schedule.snglExecTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="snglExecTime" size=8>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panel-default" [hidden]="schedule.type != 'interval' && schedule.type != 'repeatative'">
+    <div class="panel-heading">
+        <h3 class="panel-title">Schedule Execution Details - {{schedule.type == 'interval' ? 'Interval' : 'Repeatative'}} Execution</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="idField">Start Time (Optional)</label>
+                    <input pInputText id='schedStartTime' class="form-control" [ngModel]="schedule?.schedStartTime" (ngModelChange)="schedule? schedule.schedStartTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedStartTime" size=8>
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="idField">End Time (Optional)</label>
+                    <input pInputText id='schedEndTime' class="form-control" [ngModel]="schedule?.schedEndTime" (ngModelChange)="schedule? schedule.schedEndTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedEndTime" size=8>
+
+                </div>
+            </div>
+        </div>
+        <div class="row" *ngIf="schedule.type == 'interval'">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">Interval</label>
+                    <div class="ui-inputgroup">
+                        <p-spinner id='schedInterval' [formatInput]="false" maxlength="7" [style]="{'width':'100%'}" class="form-control" [min]="0" [max]="2592000" [step]="30" [ngModel]="schedule?.schedInterval" (ngModelChange)="schedule? schedule.schedInterval=$event : null" name="schedInterval" placeholder="Intereval in seconds">
+                        </p-spinner>
+                        <span style=" display: inline-block;
+                                      text-align: center;
+                                      min-width: 1.5em;
+                                      padding: .5em;
+                                      border-width: 1px;
+                                      border-style: solid;
+                                      padding-top: 3px;
+                                      padding-bottom: 0px;">{{schedule.schedInterval | timeDisplay}}
+                                    <span style="    font-size: small;">DD:HH:MM:SS</span></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div *ngIf="schedule.type == 'repeatative'">
+            <div class="row">
+                <div class="col-xs-12 col-md-12">
+                    <div class="form-group">
+                        <label for="idField">Repeat execution</label>
+                        <p-dropdown [options]="executionTypes" [ngModel]="schedule?.schedInterval" (ngModelChange)="schedule ? schedule.schedInterval=$event : null" name="executionType" inputId="executionType" [style]="{'width':'100%'}">
+                        </p-dropdown>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="row">
+                <div class="col-xs-12 col-md-6" *ngIf="schedule?.executionType == 'weekly' || schedule?.executionType == 'biweekly'">
+                    <div class="form-group">
+                        <label for="idField">Week Day</label>
+                        <p-dropdown [options]="weekDays" [ngModel]="schedule?.executionWeekDay" (ngModelChange)="schedule ? schedule.executionWeekDay=$event : null" name="executionWeekDay" inputId="executionWeekDay" [style]="{'width':'100%'}">
+                        </p-dropdown>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-6" *ngIf="schedule?.executionType == 'monthly' || schedule?.executionType == 'quarterly' || schedule?.executionType == 'yearly'">
+                    <div class="form-group">
+                        <label for="idField">Month Day</label>
+                        <p-dropdown [options]="monthDays" [ngModel]="schedule?.executionMonthDay" (ngModelChange)="schedule ? schedule.executionMonthDay=$event : null" name="executionMonthDay" inputId="executionMonthDay" [style]="{'width':'100%'}">
+                        </p-dropdown>
+                    </div>
+                </div>
+                <div class="col-xs-12 " *ngIf="schedule?.executionType" [ngClass]="schedule?.executionType == 'daily' ? 'col-md-12' : 'col-md-6'">
+                    <div class="form-group">
+                        <label for="idField">Time</label>
+                        <p-calendar [(ngModel)]="schedule.executionTime" [timeOnly]="true" name="executionTime" [style]="{'width':'100%'}"></p-calendar>
+                    </div>
+                </div>
+            </div> -->
+
+            <div class="row">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Schedule Target Meta-data</h3>
+    </div>
+
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-6">
+                <label for="targetType">Target Type</label>
+                <p-dropdown [options]="targetTypes" [ngModel]="schedule?.targetType" (ngModelChange)="schedule ? schedule.targetType=$event : null" name="targetType" inputId="targetType" [style]="{'width':'100%'}">
+                </p-dropdown>
+            </div>
+            <div class="col-xs-12 col-md-6">
+                <div class="form-group">
+                    <label for="outputFormat">Output Format</label>
+                    <p-dropdown [options]="outputFormats" [ngModel]="schedule?.outputFormat" (ngModelChange)="schedule ? schedule.outputFormat=$event : null" name="outputFormat" inputId="outputFormat" [style]="{'width':'100%'}">
+                    </p-dropdown>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="form-group">
+                    <label for="idField">List of different parameters will be placed here based on selected Target Type and Output Format</label>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{schedule |
+ json}}
