@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve --environment=local -o",
     "build": "ng build",
+    "deploy:xampp": "ng build -environment=sit --prod --aot=true -op C:\\xampp\\htdocs\\extract",
     "deploy:java": "ng build --environment=java --prod --aot=true -bh /ExtractNG/ -d /ExtractNG/ -op C:\\Users\\dkirolo.ORG\\Documents\\NetBeansProjects\\ExtractNG\\web",
     "deploy:sit": "ng build --environment=sit --prod --aot=true  -op X:\\webapps\\extract",
     "test": "ng test",

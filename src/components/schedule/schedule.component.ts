@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { SharedService } from './../../providers/shared/shared.service';
 import { SelectItem } from 'primeng/primeng';
@@ -47,12 +48,14 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
     this.hhmm.push({ time: '00:00' });
 
     this.schedule = {
-      scheduleConfig: {
+      schedule: {
         type: 'once',
         snglExecTime: '',
-        scheduleEnabled: true
+        enabled: true,
+        endPoingUrl: environment.apiUrl + '/extract/schedule'
       },
-      execParams: {
+      ED2: {},
+      params: {
         pmID: '',
         deltaParams: {
           aggrPeriod: 'M',
@@ -231,23 +234,23 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       timeLabel: 'Time', // optional string added to left of time select
     });
 
-    this.schedule.execParams.pmID =this.conf.pmID;
+    this.schedule.params.pmID =this.conf.pmID;
   }
 
   deleteTime(index) {
-    this.schedule.scheduleConfig.recurrence.hhmm.splice(index, 1);
+    this.schedule.schedule.recurrence.hhmm.splice(index, 1);
   }
   addTime() {
-    this.schedule.scheduleConfig.recurrence.hhmm.push({ time: '' });
+    this.schedule.schedule.recurrence.hhmm.push({ time: '' });
   }
 
   scheduleTypeCange(event) {
     switch (event.value) {
       case 'once':
-        delete this.schedule.scheduleConfig.recurrence;
-        delete this.schedule.execParams.deltaParams.rangeUnits;
-        delete this.schedule.execParams.deltaParams.rangePeriod;
-        delete this.schedule.execParams.deltaParams.executionTime;
+        delete this.schedule.schedule.recurrence;
+        delete this.schedule.params.deltaParams.rangeUnits;
+        delete this.schedule.params.deltaParams.rangePeriod;
+        delete this.schedule.params.deltaParams.executionTime;
 
         setTimeout(() => {
           const snglExecTime = new Pikaday({
@@ -297,18 +300,18 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         }, 500);
         break;
       default:
-        delete this.schedule.scheduleConfig.snglExecTime;
-        delete this.schedule.execParams.deltaParams.fromTime;
-        delete this.schedule.execParams.deltaParams.toTime;
+        delete this.schedule.schedule.snglExecTime;
+        delete this.schedule.params.deltaParams.fromTime;
+        delete this.schedule.params.deltaParams.toTime;
 
-        this.schedule.execParams.deltaParams = {
+        this.schedule.params.deltaParams = {
           aggrPeriod: 'M',
           rangeUnits: 1,
           rangePeriod: 'months',
           deltaEndTime: 1
         }
 
-        this.schedule.scheduleConfig.recurrence = {
+        this.schedule.schedule.recurrence = {
           frequency: 'hours',
           interval: 1,
           schedStartTime: '',
@@ -344,32 +347,32 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   recurrenceFrequencyCange(event) {
     switch (event.value) {
       case 'minutes':
-        delete this.schedule.scheduleConfig.recurrence.hhmm;
-        delete this.schedule.scheduleConfig.recurrence.weekDays;
-        delete this.schedule.scheduleConfig.recurrence.monthDays;
+        delete this.schedule.schedule.recurrence.hhmm;
+        delete this.schedule.schedule.recurrence.weekDays;
+        delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'hours':
-        delete this.schedule.scheduleConfig.recurrence.hhmm;
-        delete this.schedule.scheduleConfig.recurrence.weekDays;
-        delete this.schedule.scheduleConfig.recurrence.monthDays;
+        delete this.schedule.schedule.recurrence.hhmm;
+        delete this.schedule.schedule.recurrence.weekDays;
+        delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'days':
-        this.schedule.scheduleConfig.recurrence.hhmm = [];
-        this.schedule.scheduleConfig.recurrence.hhmm.push({ time: '00:00' });
-        delete this.schedule.scheduleConfig.recurrence.weekDays;
-        delete this.schedule.scheduleConfig.recurrence.monthDays;
+        this.schedule.schedule.recurrence.hhmm = [];
+        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        delete this.schedule.schedule.recurrence.weekDays;
+        delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'weeks':
-        this.schedule.scheduleConfig.recurrence.hhmm = [];
-        this.schedule.scheduleConfig.recurrence.hhmm.push({ time: '00:00' });
-        this.schedule.scheduleConfig.recurrence.weekDays = [];
-        delete this.schedule.scheduleConfig.recurrence.monthDays;
+        this.schedule.schedule.recurrence.hhmm = [];
+        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        this.schedule.schedule.recurrence.weekDays = [];
+        delete this.schedule.schedule.recurrence.monthDays;
         break;
       default:
-        this.schedule.scheduleConfig.recurrence.hhmm = [];
-        this.schedule.scheduleConfig.recurrence.hhmm.push({ time: '00:00' });
-        this.schedule.scheduleConfig.recurrence.monthDays = [];
-        delete this.schedule.scheduleConfig.recurrence.weekDays;
+        this.schedule.schedule.recurrence.hhmm = [];
+        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        this.schedule.schedule.recurrence.monthDays = [];
+        delete this.schedule.schedule.recurrence.weekDays;
         break;
     }
   }
@@ -377,7 +380,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   executionEndTypeCange(event) {
     switch (event.value) {
       case 'E':
-        this.schedule.scheduleConfig.recurrence.schedEndTime = '';
+        this.schedule.schedule.recurrence.schedEndTime = '';
         setTimeout(() => {
           const schedEndTime = new Pikaday({
             field: jQuery('#schedEndTime')[0],
@@ -396,18 +399,18 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
         break;
       case 'N':
-        this.schedule.scheduleConfig.recurrence.schedEndTime = '';
+        this.schedule.schedule.recurrence.schedEndTime = '';
         break;
       default:
-        this.schedule.scheduleConfig.recurrence.schedEndTime = 1;
+        this.schedule.schedule.recurrence.schedEndTime = 1;
         break;
     }
 
   }
   setDateRange() {
-    const unit = this.schedule.execParams.deltaParams.rangeUnits;
-    const period = this.schedule.execParams.deltaParams.rangePeriod;
-    const backPeriod = this.schedule.execParams.deltaParams.deltaEndTime;
+    const unit = this.schedule.params.deltaParams.rangeUnits;
+    const period = this.schedule.params.deltaParams.rangePeriod;
+    const backPeriod = this.schedule.params.deltaParams.deltaEndTime;
 
     const currentDate = new Date();
     this.startTimeRO = new Date();
@@ -493,26 +496,26 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
     switch (event.value) {
       case 'netshare':
-        this.schedule.execParams.target.id = '';
-        this.schedule.execParams.target.key = '';
-        this.schedule.execParams.target.directory = '';
-        delete this.schedule.execParams.target.bucketRegion;
-        delete this.schedule.execParams.target.bucketName;
+        this.schedule.params.target.id = '';
+        this.schedule.params.target.key = '';
+        this.schedule.params.target.directory = '';
+        delete this.schedule.params.target.bucketRegion;
+        delete this.schedule.params.target.bucketName;
         break;
       case 's3':
-        this.schedule.execParams.target.id = '';
-        this.schedule.execParams.target.key = '';
-        this.schedule.execParams.target.directory = '';
-        this.schedule.execParams.target.bucketRegion = '';
-        this.schedule.execParams.target.bucketName = '';
+        this.schedule.params.target.id = '';
+        this.schedule.params.target.key = '';
+        this.schedule.params.target.directory = '';
+        this.schedule.params.target.bucketRegion = '';
+        this.schedule.params.target.bucketName = '';
         break;
       default:
 
-        delete this.schedule.execParams.target.id;
-        delete this.schedule.execParams.target.key;
-        delete this.schedule.execParams.target.directory;
-        delete this.schedule.execParams.target.bucketRegion;
-        delete this.schedule.execParams.target.bucketName;
+        delete this.schedule.params.target.id;
+        delete this.schedule.params.target.key;
+        delete this.schedule.params.target.directory;
+        delete this.schedule.params.target.bucketRegion;
+        delete this.schedule.params.target.bucketName;
         break;
     }
 
