@@ -31,6 +31,7 @@ export class Configuration implements ConfigContent {
     this.connection = {};
 
     this.query = {
+      metadata: [],
       sql: '',
       timePeriod: 'M'
       // ,

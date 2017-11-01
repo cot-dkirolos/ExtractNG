@@ -13,6 +13,9 @@ declare var jQuery: any;
 export class HttpService extends Http {
 
   private baseUrl: string;
+  private extractAPIUrl: string;
+  private configAPIUrl: string;
+  private schedulerAPIUrl: string;
   public sid: string;
   systemConfiguration: any;
 
@@ -24,16 +27,20 @@ export class HttpService extends Http {
     // let token = localStorage.getItem('auth_token'); // your custom token getter function here
     // options.headers.set('Authorization', `Bearer ${token}`);
     this.systemConfiguration = {
-      // baseUrl: 'http://shelby.corp.toronto.ca:9080'
-      // baseUrl: 'https://was-intra-sit.toronto.ca'
-      baseUrl: environment.apiUrl
+      extractAPIUrl: environment.extractAPIUrl,
+      configAPIUrl: environment.configAPIUrl,
+      baseUrl: environment.apiUrl,
+      schedulerAPIUrl : environment.schedulerAPIUrl
     };
-    if (window.location.hostname !== 'localhost') {
-      // this.systemConfiguration.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
-      this.systemConfiguration.baseUrl = '';
-    }
+    // if (window.location.hostname !== 'localhost') {
+    //   // this.systemConfiguration.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+    //   this.systemConfiguration.baseUrl = '';
+    // }
     sessionStorage.setItem('extract.config', JSON.stringify(this.systemConfiguration));
-    this.baseUrl = this.systemConfiguration.baseUrl;
+    this.baseUrl = environment.apiUrl;
+    this.extractAPIUrl = environment.extractAPIUrl;
+    this.configAPIUrl = environment.configAPIUrl;
+    this.schedulerAPIUrl = environment.schedulerAPIUrl;
     // this.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
     // set token if saved in local storage
     this.sid = jQuery.cookie('extract.sid');
@@ -47,10 +54,12 @@ export class HttpService extends Http {
     this.sharedService.block = true;
     // set token if saved in local storage
     this.sid = jQuery.cookie('extract.sid');
-    let config = sessionStorage.getItem("extract.config");
-    let baseURI = null;
-    if(config){
-      baseURI = JSON.parse(config).baseUrl;
+    const config = sessionStorage.getItem('extract.config');
+    if (config) {
+      this.baseUrl = JSON.parse(config).baseUrl;
+      this.extractAPIUrl = JSON.parse(config).extractAPIUrl;
+      this.configAPIUrl = JSON.parse(config).configAPIUrl;
+      this.schedulerAPIUrl = JSON.parse(config).schedulerAPIUrl;
     }
 
     if (typeof url === 'string') { // meaning we have to add the token to the options, not in url
@@ -59,8 +68,15 @@ export class HttpService extends Http {
       // }else{
       // url = this.baseUrl + url;
       // }
+      if (url.startsWith('/c3api_config/')) {
+        url = this.configAPIUrl + url;
+      } else if (url.startsWith('/extract/')) {
+        url = this.extractAPIUrl + url;
+      } else if (url.startsWith('/c3_scheduler/')) {
+        url = this.schedulerAPIUrl + url;
+      }
 
-      url = (baseURI ? baseURI : this.baseUrl) + url;
+      // url = (baseURI ? baseURI : this.baseUrl) + url;
       if (!options) {
         // let's make option object
         options = { headers: new Headers() };
@@ -75,7 +91,15 @@ export class HttpService extends Http {
       // }else{
       //   (<Request>url).url = this.baseUrl + url.url;
       // }
-      (<Request>url).url = (baseURI ? baseURI : this.baseUrl) + url.url;
+
+      if (url.url.startsWith('/c3api_config/')) {
+        (<Request>url).url = this.configAPIUrl + url.url;
+      } else if (url.url.startsWith('/extract/')) {
+        (<Request>url).url = this.extractAPIUrl + url.url;
+      } else if (url.url.startsWith('/schedule/')) {
+        (<Request>url).url = this.schedulerAPIUrl + url.url;
+      }
+      // (<Request>url).url = (baseURI ? baseURI : this.baseUrl) + url.url;
       // we have to add the token to the url object
       url.headers.set('Accept', 'application/json');
       // url.headers.set('Content-Type', 'application/json');

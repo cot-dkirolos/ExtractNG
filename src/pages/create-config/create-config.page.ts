@@ -301,7 +301,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     //   endTime = null;
     // }
     const data = {
-      id: 'id_' + pmID,
+      id: pmID ? 'id_' + pmID : null,
       url: url,
       query: query,
       timePeriod: timePeriod,
@@ -329,11 +329,11 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   }
 
   showResults(result) {
-    // jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
 
-    // if(result.sampleurl){
-    //   jQuery('#resultTitle').html('<a target="_blank" href="' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '">' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '</a>');
-    // }
+    if(result.metaData){
+      this.conf.query.metadata = result.metaData;
+    }
+
     if (result.sampleurls) {
       let links = '';
 
@@ -346,8 +346,32 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       jQuery('#resultTitle').html(links);
     }
 
+    if (result.sql) {
+      const preStyle = `border-style: solid !important;
+      border-color: gray;
+      margin-bottom: 0;
+      overflow: auto;
+      max-width: 1334px;
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: -pre-wrap;
+      white-space: -o-pre-wrap;
+      word-wrap: break-word;
+      word-break: keep-all;` ;
+      const resultSQL = `<pre style="${preStyle}">${result.sql}</pre>`
+      jQuery('#resultSQL').html(resultSQL);
+    }
+
+    let count = 0;
+    let countStr = '';
+    if (result.count) {
+      count = result.count;
+    }
+    countStr = '<span>This query has <strong>' + count + '</strong> record(s) </span><br>';
+    jQuery('#recordsNumber').html(countStr);
+
+    if (result.data && result.data.length > 0) {
     const resp = result.data;
-    jQuery('#resultSQL').html(result.sql);
     const cols = [];
     const colHeads = [];
     let colsCnt = 0;
@@ -369,7 +393,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       renderAllRows: true,
       height: 500
     });
-
+  }
   }
 
   saveExtract(isValid: boolean, value: any) {
@@ -378,7 +402,11 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
     if (isValid) {
       this.sharedService.block = true;
+      const metadata = this.sharedService.newObject(this.conf.query.metadata);
       this.conf = value;
+      if(metadata){
+        this.conf.query.metadata = metadata;
+      }
       // if (this.conf.connection.type && this.conf.connection.type == 'excelsheet' && this.conf.query.timePeriod == '') {
       //   this.conf.query.fromTime = null;
       //   this.conf.query.toTime = null;
@@ -423,6 +451,7 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
               // console.log(result);
               jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
               jQuery('#savedMsg').fadeOut(3000);
+              this.navigateToModify(this.conf);
 
             },
               err => {
@@ -475,5 +504,26 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
         jQuery('#savedMsg').html('Could not save, please try again later.');
       });
   }
+
+  navigateToModify(conf) {
+
+        // console.log(conf);
+        let id = '';
+        if (conf.sourceCategory.toLowerCase() === 'odata' || conf.sourceCategory.toLowerCase() == 'opendata') {
+          id = conf.dataset;
+        } else {
+          id = conf.id;
+        }
+        this.router.navigate(['/modifyConf'],
+          {
+            queryParams:
+            {
+              type: (conf.sourceCategory.toLowerCase() == 'odata' || conf.sourceCategory.toLowerCase() == 'opendata' ? 'odata' : conf.sourceCategory) || '',
+              div: conf.group,
+              id: id || '',
+              pmid: conf.pmID
+            }
+          });
+      }
 
 }

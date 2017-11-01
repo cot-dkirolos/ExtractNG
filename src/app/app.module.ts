@@ -1,3 +1,4 @@
+import { DivMetaDataComponent } from './../components/div-meta-data/div-meta-data.component';
 import { MsToTimePipe } from './../pipes/msToTime.pipe';
 import { DataTableModule } from './../components/datatable/datatable.component';
 import { PaginatorModule } from './../components/paginator/paginator.component';
@@ -60,7 +61,8 @@ export function initConfig(config: AppConfig, httpService: Http) {
     ConfigListPage,
     NewUserPage,
     UpdateUserPage,ScheduleComponent,
-    MsToTimePipe
+    MsToTimePipe,
+    DivMetaDataComponent
   ],
   entryComponents: [
     LoginPage,

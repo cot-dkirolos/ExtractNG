@@ -6,5 +6,8 @@
 export const environment = {
   production: false,
   envName: 'local',
-  apiUrl: 'https://was-intra-sit.toronto.ca'
+  apiUrl: 'https://was-intra-sit.toronto.ca:9080',
+  extractAPIUrl: 'http://shelby.corp.toronto.ca:9180',
+  configAPIUrl: 'http://shelby.corp.toronto.ca:9080',
+  schedulerAPIUrl: 'http://shelby.corp.toronto.ca:9180'
 };

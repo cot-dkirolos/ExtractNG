@@ -61,6 +61,8 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   oldConfig: any;
 
+  isEditDisabled: Boolean = false;
+
 
   constructor(private extractService: ExtractService,
     private route: ActivatedRoute,
@@ -220,9 +222,9 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
             // console.log('ConfigContent: ' + JSON.parse(window.atob(result.value[0].ConfigContent)));
 
             this.oldConfig = result.value[0].ConfigContent;
-            let configContent = JSON.parse(window.atob(result.value[0].ConfigContent));
+            const configContent = JSON.parse(window.atob(result.value[0].ConfigContent));
             this.initConfiguration(configContent);
-            this.lastUpdateTime = result.value[0].UpdateTime.replace('T',' ');
+            this.lastUpdateTime = result.value[0].UpdateTime.replace('T', ' ');
             this.lastUpdateUser = result.value[0].User;
 
           });
@@ -232,9 +234,9 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
       });
   }
-    getCurrentConfig(){
-      return btoa(JSON.stringify(this.conf));
-    }
+  getCurrentConfig() {
+    return btoa(JSON.stringify(this.conf));
+  }
 
   initConfiguration(config: Configuration) {
     this.conf = config;
@@ -246,6 +248,11 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     }
     this.divisionLabel = this.appConfig.getDivisionLabel(this.conf.group);
     this.categoryLabel = this.appConfig.getSourceCategoryLabel(this.conf.sourceCategory.toLocaleLowerCase());
+    this.isEditDisabled = this.conf.enabled;
+
+    // if(!this.conf.query.metadata){
+    //   this.conf.query.metadata = [];
+    // }
     // this.conf = new Configuration(config.id);
     // this.conf.name = config.name;
     // this.conf.pmID = config.pmID;
@@ -303,7 +310,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       this.conf.connection.serviceName = null;
     }
 
-    if(value == 'access'){
+    if (value == 'access') {
       this.conf.connection.huser = '';
       this.conf.connection.hpassword = '';
     }
@@ -314,8 +321,8 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     this.sharedService.block = true;
     this.refreshConStr();
     let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
-    if(this.conf.connection.type == 'access'){
-      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    if (this.conf.connection.type == 'access') {
+      url = url + ';huser=' + this.conf.connection.huser + ';hpassword=' + this.conf.connection.hpassword;
     }
     this.extractService.validateURL(url).subscribe(result => {
       if (result.error) {
@@ -344,8 +351,8 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     // const timePeriod = jQuery('#timePeriod').val();
     const timePeriod = this.conf.query.timePeriod;
     let url = this.sharedService.getFullURL(this.conf.connection, this.conf.connection.password);
-    if(this.conf.connection.type == 'access'){
-      url = url + ';huser='+this.conf.connection.huser + ';hpassword='+this.conf.connection.hpassword;
+    if (this.conf.connection.type == 'access') {
+      url = url + ';huser=' + this.conf.connection.huser + ';hpassword=' + this.conf.connection.hpassword;
     }
     let startTime = this.conf.query.fromTime;
     let endTime = this.conf.query.toTime;
@@ -353,10 +360,10 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     // const query = this.editor.getValue();
     const query = this.conf.query.sql;
 
-      // if(this.conf.connection.type && this.conf.connection.type == 'excelsheet' && timePeriod == '' ){
-      //   startTime = null;
-      //   endTime = null;
-      // }
+    // if(this.conf.connection.type && this.conf.connection.type == 'excelsheet' && timePeriod == '' ){
+    //   startTime = null;
+    //   endTime = null;
+    // }
     const data = {
       id: 'id_' + pmID,
       url: url,
@@ -376,11 +383,11 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     },
       err => {
         this.sharedService.block = false;
-        if(err['_body'] && typeof err['_body']  == 'string'){
+        if (err['_body'] && typeof err['_body'] == 'string') {
 
-        jQuery('#result').html('<span class="badResultCode">'+err['_body']+'</span>');
-        }else{
-        jQuery('#result').html('<span class="badResultCode">Unknown error, please try again later</span>');
+          jQuery('#result').html('<span class="badResultCode">' + err['_body'] + '</span>');
+        } else {
+          jQuery('#result').html('<span class="badResultCode">Unknown error, please try again later</span>');
         }
         // this.showResults(err);
       });
@@ -389,48 +396,74 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
 
   showResults(result) {
     // jQuery('#resultTitle').html('<a target="_blank" href="/extract/try2htmlTable/' + result.id + '">HTML table link</a>');
-   
-    if(result.sampleurls){
+
+    if (result.metaData) {
+      this.conf.query.metadata = result.metaData;
+    }
+
+    if (result.sampleurls) {
       let links = '';
 
       links += '<ul class="list-unstyled">';
-      let host = JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract';
+      let host = JSON.parse(sessionStorage.getItem('extract.config')).baseUrl + '/extract';
       for (var link in result.sampleurls[0]) {
-        links +=  '<li>'+  link + ' <br> ' + '<a target="_blank" style="font-size:small" href="' + host + result.sampleurls[0][link] + '">'  + host + result.sampleurls[0][link] + '</a> </li>';
+        links += '<li>' + link + ' <br> ' + '<a target="_blank" style="font-size:small" href="' + host + result.sampleurls[0][link] + '">' + host + result.sampleurls[0][link] + '</a> </li>';
       }
-    // jQuery('#resultTitle').html('<a target="_blank" href="' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '">' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '</a>');
-    links += '</ul>';
+      // jQuery('#resultTitle').html('<a target="_blank" href="' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '">' + JSON.parse(sessionStorage.getItem('extract.config')).baseUrl +'/extract'+ result.sampleurl + '</a>');
+      links += '</ul>';
+
+
+      jQuery('#resultTitle').html(links);
+    }
+
+    if (result.sql) {
+      const preStyle = `border-style: solid !important;
+      border-color: gray;
+      margin-bottom: 0;
+      overflow: auto;
+      max-width: 1334px;
+      white-space: pre-wrap;
+      white-space: -moz-pre-wrap;
+      white-space: -pre-wrap;
+      white-space: -o-pre-wrap;
+      word-wrap: break-word;
+      word-break: keep-all;` ;
+      const resultSQL = `<pre style="${preStyle}">${result.sql}</pre>`
+      jQuery('#resultSQL').html(resultSQL);
+    }
+
     let count = 0;
     let countStr = '';
-    if(result.count){
+    if (result.count) {
       count = result.count;
-      countStr='<span>This query has <strong>'+count+'</strong> record(s) </span><br>';
     }
-    jQuery('#resultTitle').html(countStr+links);
-    }
-    const resp = result.data;
-    jQuery('#resultSQL').html(result.sql);
-    const cols = [];
-    const colHeads = [];
-    let colsCnt = 0;
-    for (const p in resp[0]) {
-      if (resp[0].hasOwnProperty(p)) {
-        colHeads[colsCnt] = p;
-        cols[colsCnt] = {
-          data: p,
-          readOnly: true
-        };
-        colsCnt++;
+    countStr = '<span>This query has <strong>' + count + '</strong> record(s) </span><br>';
+    jQuery('#recordsNumber').html(countStr);
+
+    if (result.data && result.data.length > 0) {
+      const resp = result.data;
+      const cols = [];
+      const colHeads = [];
+      let colsCnt = 0;
+      for (const p in resp[0]) {
+        if (resp[0].hasOwnProperty(p)) {
+          colHeads[colsCnt] = p;
+          cols[colsCnt] = {
+            data: p,
+            readOnly: true
+          };
+          colsCnt++;
+        }
       }
+      const HOT = new Handsontable(document.getElementById('result'), {
+        data: resp,
+        manualColumnResize: true,
+        colHeaders: colHeads,
+        columns: cols,
+        renderAllRows: true,
+        height: 500
+      });
     }
-    const HOT = new Handsontable(document.getElementById('result'), {
-      data: resp,
-      manualColumnResize: true,
-      colHeaders: colHeads,
-      columns: cols,
-      renderAllRows: true,
-      height: 500
-    });
 
   }
 
@@ -439,7 +472,11 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
     this.sharedService.block = true;
     // console.log(value);
     if (isValid) {
-      this.conf = value;
+      const metadata = this.sharedService.newObject(this.conf.query.metadata);
+      // this.conf = value;
+      if (metadata) {
+        this.conf.query.metadata = metadata;
+      }
       // if(this.conf.connection.type && this.conf.connection.type == 'excelsheet' && this.conf.query.timePeriod == '' ){
       //   this.conf.query.fromTime = null;
       //   this.conf.query.toTime = null;
@@ -456,10 +493,10 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
           APIName: 'aggregator'
         }
       } else {
-        if(this.conf.sourceCategory.toUpperCase() == 'EPM'){
-            qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-        }else{
-          qualifiedName = 'Extract/'+this.conf.sourceCategory.toLocaleUpperCase()+'_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+        if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
+          qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+        } else {
+          qualifiedName = 'Extract/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
         }
         this.conf.dataset = null;
 
@@ -479,6 +516,9 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
           // console.log(result);
           jQuery('#savedMsg').html('<span class="goodResultCode">Saved</span>');
           jQuery('#savedMsg').fadeOut(3000);
+          this.isEditDisabled = this.conf.enabled;
+
+          this.oldConfig = btoa(JSON.stringify(this.conf));
 
         },
           err => {

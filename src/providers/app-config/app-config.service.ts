@@ -27,19 +27,19 @@ export class AppConfig {
   constructor(private sharedService: SharedService, private http: Http) {
     if (!this.config) {
       this.systemConfiguration = {
-        // baseUrl: 'http://shelby.corp.toronto.ca:9080'
-        // baseUrl: 'https://was-intra-sit.toronto.ca'
+        extractAPIUrl: environment.extractAPIUrl,
+        configAPIUrl: environment.configAPIUrl,
         baseUrl: environment.apiUrl
       };
-      if (window.location.hostname !== 'localhost') {
-        // this.systemConfiguration.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
-        this.systemConfiguration.baseUrl = '';
-      }
+      // if (window.location.hostname !== 'localhost') {
+      //   // this.systemConfiguration.baseUrl = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
+      //   this.systemConfiguration.baseUrl = '';
+      // }
       sessionStorage.setItem('extract.config', JSON.stringify(this.systemConfiguration));
       this.baseUrl = this.systemConfiguration.baseUrl;
-      this.appConfigUsersGroupsURL = this.systemConfiguration.baseUrl + this.appConfigUsersGroupsURL;
-      this.appConfigUsersURL = this.systemConfiguration.baseUrl + this.appConfigUsersURL;
-      this.appConfigDataURL = this.systemConfiguration.baseUrl + this.appConfigDataURL;
+      this.appConfigUsersGroupsURL = this.systemConfiguration.configAPIUrl + this.appConfigUsersGroupsURL;
+      this.appConfigUsersURL = this.systemConfiguration.configAPIUrl + this.appConfigUsersURL;
+      this.appConfigDataURL = this.systemConfiguration.configAPIUrl + this.appConfigDataURL;
 
       this.load(http);
     }

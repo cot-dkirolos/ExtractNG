@@ -15,6 +15,7 @@ declare var jQuery: any;
 export class AuthenticationService {
 
   private loginUrl: string = 'https://insideto-secure.toronto.ca/cc_sr_admin_v1/session';
+  // private loginUrl: string = 'https://was-intra-sit.toronto.ca/c3api_auth/auth';
   // private loginUrl: string = "https://was-intra-sit.toronto.ca/cc_sr_admin_v1/session";
   // private loginUrl: string = "https://was-intra-qa.toronto.ca/cc_sr_admin_v1/session";
   //user=[USERNAME]&pwd=[PASSWORD]&app=[APPNAME]";

@@ -1,5 +1,8 @@
 export const environment = {
   production: true,
   envName: 'prod',
-  apiUrl: ''
+  apiUrl: '',
+  extractAPIUrl: '',
+  configAPIUrl: '',
+  schedulerAPIUrl: 'http://shelby.corp.toronto.ca:9180'
 };

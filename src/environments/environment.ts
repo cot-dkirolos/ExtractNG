@@ -6,5 +6,8 @@
 export const environment = {
   production: false,
   envName: 'dev',
-  apiUrl: ''
+  apiUrl: '',
+  extractAPIUrl: '',
+  configAPIUrl: '',
+  schedulerAPIUrl: ''
 };

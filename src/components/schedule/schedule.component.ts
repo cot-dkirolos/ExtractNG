@@ -1,3 +1,4 @@
+import { ExtractService } from './../../providers/extract/extract.service';
 import { environment } from './../../environments/environment';
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { SharedService } from './../../providers/shared/shared.service';
@@ -30,29 +31,29 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   executionEndType: SelectItem[];
   backPeriods: SelectItem[];
   endType: string;
-  hhmm: Array<{ time }>;
+  runTimes: Array<{ time }>;
   schedule: any;
   dates: Date[];
 
   startTimeRO: Date;
   endTimeRO: Date;
 
-  constructor(public sharedService: SharedService, private appConfig: AppConfig) {
+  constructor(public sharedService: SharedService, private appConfig: AppConfig, private extractService: ExtractService) {
 
     this.startTimeRO = new Date();
     this.endTimeRO = new Date();
 
     this.endType = 'N';
 
-    this.hhmm = [];
-    this.hhmm.push({ time: '00:00' });
+    this.runTimes = [];
+    this.runTimes.push({ time: '00:00' });
 
     this.schedule = {
       schedule: {
         type: 'once',
-        snglExecTime: '',
+        singleExecutionStartTime: '',
         enabled: true,
-        endPoingUrl: environment.apiUrl + '/extract/schedule'
+        endPointUrl: environment.apiUrl + '/extract/schedule'
       },
       ED2: {},
       params: {
@@ -66,7 +67,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         // recurrence: {
         //   frequency: 'hours',
         //   interval: 1,
-        // hhmm: this.hhmm,
+        // runTimes: this.runTimes,
         // weekDays: [],
         // monthDays: []
         // },
@@ -161,8 +162,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
   ngAfterViewInit() {
-    const snglExecTime = new Pikaday({
-      field: jQuery('#snglExecTime')[0],
+    const singleExecutionStartTime = new Pikaday({
+      field: jQuery('#singleExecutionStartTime')[0],
       format: 'YYYY-MM-DDTHH:mm:ss',
       showTime: true,
       showMinutes: true,
@@ -234,14 +235,14 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
       timeLabel: 'Time', // optional string added to left of time select
     });
 
-    this.schedule.params.pmID =this.conf.pmID;
+    this.schedule.params.pmID = this.conf.pmID;
   }
 
   deleteTime(index) {
-    this.schedule.schedule.recurrence.hhmm.splice(index, 1);
+    this.schedule.schedule.recurrence.runTimes.splice(index, 1);
   }
   addTime() {
-    this.schedule.schedule.recurrence.hhmm.push({ time: '' });
+    this.schedule.schedule.recurrence.runTimes.push({ time: '' });
   }
 
   scheduleTypeCange(event) {
@@ -253,8 +254,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         delete this.schedule.params.deltaParams.executionTime;
 
         setTimeout(() => {
-          const snglExecTime = new Pikaday({
-            field: jQuery('#snglExecTime')[0],
+          const singleExecutionStartTime = new Pikaday({
+            field: jQuery('#singleExecutionStartTime')[0],
             format: 'YYYY-MM-DDTHH:mm:ss',
             showTime: true,
             showMinutes: true,
@@ -300,7 +301,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         }, 500);
         break;
       default:
-        delete this.schedule.schedule.snglExecTime;
+        delete this.schedule.schedule.singleExecutionStartTime;
         delete this.schedule.params.deltaParams.fromTime;
         delete this.schedule.params.deltaParams.toTime;
 
@@ -314,8 +315,8 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         this.schedule.schedule.recurrence = {
           frequency: 'hours',
           interval: 1,
-          schedStartTime: '',
-          schedEndTime: '',
+          startTime: '',
+          endTime: '',
         };
 
 
@@ -347,30 +348,30 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   recurrenceFrequencyCange(event) {
     switch (event.value) {
       case 'minutes':
-        delete this.schedule.schedule.recurrence.hhmm;
+        delete this.schedule.schedule.recurrence.runTimes;
         delete this.schedule.schedule.recurrence.weekDays;
         delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'hours':
-        delete this.schedule.schedule.recurrence.hhmm;
+        delete this.schedule.schedule.recurrence.runTimes;
         delete this.schedule.schedule.recurrence.weekDays;
         delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'days':
-        this.schedule.schedule.recurrence.hhmm = [];
-        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        this.schedule.schedule.recurrence.runTimes = [];
+        this.schedule.schedule.recurrence.runTimes.push({ time: '00:00' });
         delete this.schedule.schedule.recurrence.weekDays;
         delete this.schedule.schedule.recurrence.monthDays;
         break;
       case 'weeks':
-        this.schedule.schedule.recurrence.hhmm = [];
-        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        this.schedule.schedule.recurrence.runTimes = [];
+        this.schedule.schedule.recurrence.runTimes.push({ time: '00:00' });
         this.schedule.schedule.recurrence.weekDays = [];
         delete this.schedule.schedule.recurrence.monthDays;
         break;
       default:
-        this.schedule.schedule.recurrence.hhmm = [];
-        this.schedule.schedule.recurrence.hhmm.push({ time: '00:00' });
+        this.schedule.schedule.recurrence.runTimes = [];
+        this.schedule.schedule.recurrence.runTimes.push({ time: '00:00' });
         this.schedule.schedule.recurrence.monthDays = [];
         delete this.schedule.schedule.recurrence.weekDays;
         break;
@@ -380,7 +381,7 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
   executionEndTypeCange(event) {
     switch (event.value) {
       case 'E':
-        this.schedule.schedule.recurrence.schedEndTime = '';
+        this.schedule.schedule.recurrence.endTime = '';
         setTimeout(() => {
           const schedEndTime = new Pikaday({
             field: jQuery('#schedEndTime')[0],
@@ -399,10 +400,10 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
 
         break;
       case 'N':
-        this.schedule.schedule.recurrence.schedEndTime = '';
+        this.schedule.schedule.recurrence.endTime = '';
         break;
       default:
-        this.schedule.schedule.recurrence.schedEndTime = 1;
+        this.schedule.schedule.recurrence.endTime = 1;
         break;
     }
 
@@ -519,6 +520,23 @@ export class ScheduleComponent implements OnInit, AfterViewInit {
         break;
     }
 
+  }
+
+  saveSchedule( event ) {
+    this.sharedService.block = true;
+    jQuery('#scheduleSavedMsg').show();
+    jQuery('#scheduleSavedMsg').html('Saving...');
+    this.extractService.saveScheduleConf(this.schedule).subscribe((result) => {
+      this.sharedService.block = false;
+      // console.log(result);
+      jQuery('#scheduleSavedMsg').html('<span class="goodResultCode">Saved</span>');
+      jQuery('#scheduleSavedMsg').fadeOut(3000);
+
+    },
+      err => {
+        this.sharedService.block = false;
+        jQuery('#scheduleSavedMsg').html('<span class="badResultCode">' + (err.json().error ? err.json().error.message : 'error') + '</span>');
+      });
   }
 
 }

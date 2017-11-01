@@ -17,11 +17,13 @@ export class ExtractService {
   // $.base64.encode("this is a test");
   // $.base64.decode("dGhpcyBpcyBhIHRlc3Q=");
 
+  private schedulerUrl = '/c3_scheduler/';
   private confingsUrl = '/extract/fire/';
   private confingUrl = '/extract/';
   private validateConnectionUrl = '/extract/source/try/';
   private queryURL = '/extract/try';
   private setConfUrl = '/c3api_config/v2/ConfigService.svc/ConfigSet';
+  private getMetaDataUrl = 'extract/getMetaData/{SOURCES}/{DIVISIONS}';
   private apiConfigExtractsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet?$filter={SOURCES}ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
 
   constructor(private httpService: HttpService, private http: Http) {
@@ -154,6 +156,16 @@ export class ExtractService {
       .catch((error: any) => Observable.throw(error)); // ...errors if any
   }
 
+  getMetaSataListBySource(sources, divisions) {
+    const link = this.getMetaDataUrl.replace('{SOURCES}', sources).replace('{DIVISIONS}', divisions)
+    // console.log(link);
+    return this.httpService.get(link)
+      .map((res: Response) => {
+        return res.json();
+      }) // ...and calling .json() on the response to return data
+      .catch((error: any) => Observable.throw(error)); // ...errors if any
+  }
+
 
   getExtractListBySource(sources, divisions) {
     let link: string;
@@ -231,4 +243,27 @@ export class ExtractService {
   //   }
   //     );
   // }
+
+
+  saveScheduleConf(data) {
+
+        const headers = new Headers();
+        headers.append('Accept', 'application/json');
+        headers.append('Content-Type', 'application/json');
+
+        headers.append('AppName', 'App-1506964604');
+        headers.append('AppKey', '1506964604');
+
+        // headers.append('AppName', 'App-1506005954');
+        // headers.append('AppKey', '1506005954');
+
+        // headers.append('Authorization', `AuthSession ${jQuery.cookie('extract.sid')}`);
+
+        return this.httpService.post(this.schedulerUrl, data, { headers: headers })
+          .map((res: Response) => {
+            return res.json();
+          }) // ...and calling .json() on the response to return data
+          .catch((error: any) => Observable.throw(error)); // ...errors if any
+      }
+
 }

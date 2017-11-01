@@ -1,6 +1,6 @@
 <p class="text-right">
-    <span id='savedMsg'></span>
-    <button pButton icon="fa-floppy-o" id='scheduleSaveBtn' style="margin: 0;" label="Save Schedule" [disabled]="sharedService.block"></button>
+    <span id='scheduleSavedMsg'></span>
+    <button pButton icon="fa-floppy-o" id='scheduleSaveBtn' style="margin: 0;" label="Save Schedule" (click)="saveSchedule($event)" [disabled]="sharedService.block"></button>
 </p>
 
 <div class="panel panel-default">
@@ -32,7 +32,7 @@
             <div class="col-xs-12 col-md-12">
                 <div class="form-group">
                     <label for="idField">Execution Time</label>
-                    <input pInputText id='snglExecTime' class="form-control" [ngModel]="schedule?.schedule.snglExecTime" (ngModelChange)="schedule? schedule.schedule.snglExecTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="snglExecTime" size=8>
+                    <input pInputText id='singleExecutionStartTime' class="form-control" [ngModel]="schedule?.schedule.singleExecutionStartTime" (ngModelChange)="schedule? schedule.schedule.singleExecutionStartTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="singleExecutionStartTime" size=8>
 
                 </div>
             </div>
@@ -43,7 +43,7 @@
                 <div class="col-xs-12 col-md-12">
                     <div class="form-group">
                         <label for="idField">Start Time</label>
-                        <input pInputText id='schedStartTime' class="form-control" [ngModel]="schedule?.schedule.recurrence.schedStartTime" (ngModelChange)="schedule? schedule.schedule.recurrence.schedStartTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedStartTime" size=8>
+                        <input pInputText id='schedStartTime' class="form-control" [ngModel]="schedule?.schedule.recurrence.startTime" (ngModelChange)="schedule? schedule.schedule.recurrence.startTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="startTime" size=8>
 
                     </div>
                 </div>
@@ -98,9 +98,9 @@
                     <div class="col-xs-12 col-md-12">
                         <div class="form-group">
                             <label for="idField">Time <button pButton type="button" icon="fa-plus" (click)="addTime()" class="ui-button-secondary"></button></label>
-                            <div *ngFor="let row of schedule?.schedule.recurrence.hhmm; let i = index" style="padding-bottom: 5px;">
-                                <p-calendar readonlyInput="true" dataType="string" [(ngModel)]="row.time" [timeOnly]="true" name="time" [style]="{'width':schedule?.schedule.recurrence.hhmm.length > 1 ? 'calc(100% - 40px)' : '100%'}"></p-calendar>
-                                <button pButton type="button" icon="fa-close" *ngIf="schedule?.schedule.recurrence.hhmm.length > 1" (click)="deleteTime(i)" class="ui-button-danger"></button>
+                            <div *ngFor="let row of schedule?.schedule.recurrence.runTimes; let i = index" style="padding-bottom: 5px;">
+                                <p-calendar readonlyInput="true" dataType="string" [(ngModel)]="row.time" [timeOnly]="true" name="time" [style]="{'width':schedule?.schedule.recurrence.runTimes.length > 1 ? 'calc(100% - 40px)' : '100%'}"></p-calendar>
+                                <button pButton type="button" icon="fa-close" *ngIf="schedule?.schedule.recurrence.runTimes.length > 1" (click)="deleteTime(i)" class="ui-button-danger"></button>
                             </div>
                         </div>
                     </div>
@@ -121,11 +121,11 @@
                     <div class="col-xs-12 col-md-12">
                         <div class="form-group">
                             <label for="schedEndTime" *ngIf="endType == 'E' "> End time </label>
-                            <input pInputText *ngIf="endType == 'E' " id='schedEndTime' class="form-control" [ngModel]="schedule?.schedule.recurrence.schedEndTime" (ngModelChange)="schedule? schedule.schedule.recurrence.schedEndTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedEndTime"
+                            <input pInputText *ngIf="endType == 'E' " id='schedEndTime' class="form-control" [ngModel]="schedule?.schedule.recurrence.endTime" (ngModelChange)="schedule? schedule.schedule.recurrence.endTime=$event : null" placeholder="yyyy-MM-ddThh:mm:ss" name="schedEndTime"
                                 size=8>
 
                             <label for="schedEndTime" *ngIf="endType == 'O' ">Number of times </label>
-                            <p-spinner *ngIf="endType == 'O'" id='schedEndTimeSpinner' [ngModel]="schedule?.schedule.recurrence.schedEndTime" (ngModelChange)="schedule? schedule.schedule.recurrence.schedEndTime=$event : null" [formatInput]="false" maxlength="3" [style]="{'width':'100%'}" [min]="1"
+                            <p-spinner *ngIf="endType == 'O'" id='schedEndTimeSpinner' [ngModel]="schedule?.schedule.recurrence.endTime" (ngModelChange)="schedule? schedule.schedule.recurrence.endTime=$event : null" [formatInput]="false" maxlength="3" [style]="{'width':'100%'}" [min]="1"
                                 [max]="999" [step]="1" name="schedEndTime" placeholder="schedEndTime">
                             </p-spinner>
                         </div>

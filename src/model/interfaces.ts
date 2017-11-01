@@ -94,6 +94,7 @@ export interface Query {
     batches?: string;
     fromTime?:  string;
     toTime?:  string;
+    metadata?: any;
 }
 
 // export interface Schedule {
@@ -127,4 +128,5 @@ export interface ConfigContent {
   connection?: Connection;
   query?: Query;
   enabled?: boolean;
+  metadata?: any;
 }

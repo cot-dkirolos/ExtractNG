@@ -104,9 +104,7 @@
                             <div class="col-xs-12">
                                 <div class="form-group">
                                     <label for="enabled" class="ui-helper-hidden-accessible">Enabled for Active Data Integration</label>
-                                    <p-toggleButton onLabel="Enabled for Active Data Integration" offLabel="Disabled for Active Data Integration"
-                                    name="enabled" inputId="enabled" onIcon="fa-check-square" offIcon="fa-square-o" [ngModel]="conf?.enabled"
-                                    (ngModelChange)="conf ? conf.enabled=$event : null"></p-toggleButton>
+                                    <p-toggleButton onLabel="Enabled for Active Data Integration" offLabel="Disabled for Active Data Integration" name="enabled" inputId="enabled" onIcon="fa-check-square" offIcon="fa-square-o" [ngModel]="conf?.enabled" (ngModelChange)="conf ? conf.enabled=$event : null"></p-toggleButton>
                                     <!--<label for="enabled">Enabled</label>
                                     <p-dropdown [options]="enabledList" [hidden]="false" [readonly]="false" [ngModel]="conf?.enabled" (ngModelChange)="conf ? conf.enabled=$event : null" name="enabled" inputId="enabled" [style]="{'width':'100%'}">
                                     </p-dropdown>-->
@@ -191,84 +189,84 @@
                     </div>
 
                     <div class="panel-body">
-                      <div class="row">
-                          <div class="col-xs-12">
-                              <div class="form-group">
-                                  <label for="connectionType">Connection Type</label>
-
-                                  <p-dropdown [options]="connectionTypes" (onChange)="conTypeChange($event,$event.value)" [ngModel]="conf?.connection.type" name="type" (ngModelChange)="conf ? conf.connection.type=$event : null" inputId="connectionType" [style]="{'width':'100%'}"></p-dropdown>
-                              </div>
-                          </div>
-                      </div>
-
-                      <div id="connectionInfo" *ngIf="conf.connection && conf.connection.type && conf.connection.type != ''">
-                          <div class="row">
-                              <div [ngClass]="conf?.connection.type == 'excelsheet' || conf?.connection.type == 'access' ? 'col-xs-12' : 'col-xs-4'">
-                                  <div class="form-group">
-                                      <label for="connectionHostname">{{conf?.connection.type == 'excelsheet' ? 'Folder' : (conf?.connection.type == 'access' ? 'DB Path' : 'Host Name')}}</label>
-                                      <input id="connectionHostname" name="hostName" type="text" class="form-control" [ngModel]="conf?.connection.hostName" (ngModelChange)="conf ? conf.connection.hostName=$event : null">
-                                  </div>
-                              </div>
-
-                              <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet' && conf?.connection.type != 'access'">
-                                  <div class="form-group">
-                                      <label for="connectionPort">Port</label>
-                                      <input id="connectionPort" name="port" type="text" class="form-control" [ngModel]="conf?.connection.port" (ngModelChange)="conf ? conf.connection.port=$event : null">
-                                  </div>
-                              </div>
-
-                              <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet' && conf?.connection.type != 'access'">
-                                  <div class="form-group">
-                                      <label for="connectionDB">{{conf?.connection.type == 'sqlserver' ? 'Database Name' : 'Service Name'}}</label>
-                                      <input id="connectionDB" name="serviceName" type="text" class="form-control" [ngModel]="conf?.connection.serviceName" (ngModelChange)="conf ? conf.connection.serviceName=$event : null">
-                                  </div>
-                              </div>
-                          </div>
-
-                          <div class="row" *ngIf="conf?.connection.type == 'access'">
-                            <div class="col-xs-4">
+                        <div class="row">
+                            <div class="col-xs-12">
                                 <div class="form-group">
-                                    <label for="huser">Host User</label>
-                                    <input id="huser" name="huser" type="text" class="form-control" size="35" [ngModel]="conf?.connection.huser" (ngModelChange)="conf ? conf.connection.huser=$event : null">
-                                </div>
-                            </div>
+                                    <label for="connectionType">Connection Type</label>
 
-                            <div class="col-xs-4">
-                                <div class="form-group">
-                                    <label for="hpwd">Host Password</label>
-                                    <input type="password" id='hpwd' name="hpassword" class="form-control" size="35" [ngModel]="conf?.connection.hpassword" (ngModelChange)="conf ? conf.connection.hpassword=$event : null">
+                                    <p-dropdown [options]="connectionTypes" (onChange)="conTypeChange($event,$event.value)" [ngModel]="conf?.connection.type" name="type" (ngModelChange)="conf ? conf.connection.type=$event : null" inputId="connectionType" [style]="{'width':'100%'}"></p-dropdown>
                                 </div>
                             </div>
                         </div>
 
-                          <!-- COMMON -->
+                        <div id="connectionInfo" *ngIf="conf.connection && conf.connection.type && conf.connection.type != ''">
+                            <div class="row">
+                                <div [ngClass]="conf?.connection.type == 'excelsheet' || conf?.connection.type == 'access' ? 'col-xs-12' : 'col-xs-4'">
+                                    <div class="form-group">
+                                        <label for="connectionHostname">{{conf?.connection.type == 'excelsheet' ? 'Folder' : (conf?.connection.type == 'access' ? 'DB Path' : 'Host Name')}}</label>
+                                        <input id="connectionHostname" name="hostName" type="text" class="form-control" [ngModel]="conf?.connection.hostName" (ngModelChange)="conf ? conf.connection.hostName=$event : null">
+                                    </div>
+                                </div>
 
-                          <div class="row">
-                              <div class="col-xs-4">
-                                  <div class="form-group">
-                                      <label for="user">User</label>
-                                      <input id="user" name="user" type="text" class="form-control" size="35" [ngModel]="conf?.connection.user" (ngModelChange)="conf ? conf.connection.user=$event : null">
-                                  </div>
-                              </div>
+                                <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet' && conf?.connection.type != 'access'">
+                                    <div class="form-group">
+                                        <label for="connectionPort">Port</label>
+                                        <input id="connectionPort" name="port" type="text" class="form-control" [ngModel]="conf?.connection.port" (ngModelChange)="conf ? conf.connection.port=$event : null">
+                                    </div>
+                                </div>
 
-                              <div class="col-xs-4">
-                                  <div class="form-group">
-                                      <label for="pwd">Password</label>
-                                      <input type="password" id='pwd' name="password" class="form-control" size="35" [ngModel]="conf?.connection.password" (ngModelChange)="conf ? conf.connection.password=$event : null">
-                                  </div>
-                              </div>
-                          </div>
+                                <div class="col-xs-4" *ngIf="conf?.connection.type != 'excelsheet' && conf?.connection.type != 'access'">
+                                    <div class="form-group">
+                                        <label for="connectionDB">{{conf?.connection.type == 'sqlserver' ? 'Database Name' : 'Service Name'}}</label>
+                                        <input id="connectionDB" name="serviceName" type="text" class="form-control" [ngModel]="conf?.connection.serviceName" (ngModelChange)="conf ? conf.connection.serviceName=$event : null">
+                                    </div>
+                                </div>
+                            </div>
 
-                          <div class="row">
-                              <div class="col-xs-12">
-                                  <div class="form-group">
-                                      <button [disabled]="sharedService.block" type="button" id="chk" class="btn btn-default" (click)="validateURL()" style="margin: 0;">Test Connection</button>
-                                      <span id="connTestResult"></span>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                            <div class="row" *ngIf="conf?.connection.type == 'access'">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <label for="huser">Host User</label>
+                                        <input id="huser" name="huser" type="text" class="form-control" size="35" [ngModel]="conf?.connection.huser" (ngModelChange)="conf ? conf.connection.huser=$event : null">
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <label for="hpwd">Host Password</label>
+                                        <input type="password" id='hpwd' name="hpassword" class="form-control" size="35" [ngModel]="conf?.connection.hpassword" (ngModelChange)="conf ? conf.connection.hpassword=$event : null">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- COMMON -->
+
+                            <div class="row">
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <label for="user">User</label>
+                                        <input id="user" name="user" type="text" class="form-control" size="35" [ngModel]="conf?.connection.user" (ngModelChange)="conf ? conf.connection.user=$event : null">
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <label for="pwd">Password</label>
+                                        <input type="password" id='pwd' name="password" class="form-control" size="35" [ngModel]="conf?.connection.password" (ngModelChange)="conf ? conf.connection.password=$event : null">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <div class="form-group">
+                                        <button [disabled]="sharedService.block" type="button" id="chk" class="btn btn-default" (click)="validateURL()" style="margin: 0;">Test Connection</button>
+                                        <span id="connTestResult"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div ngModelGroup="query">
                     <div class="panel panel-default" [hidden]="!conf.connection || !conf.connection.type || conf.connection.type == ''">
@@ -283,8 +281,7 @@
                             <!--<l-ace-editor  [options]="aceOption" name="editValue"
                    [ngModel]="conf?.query"
                    (ngModelChange)="conf ? conf.query=$event : null"></l-ace-editor>-->
-                            <ace-editor [(ngModel)]="conf?.query.sql" [autoUpdateContent]="true" [theme]="'eclipse'" name="sql"
-                            [options]="{fontFamily: 'courier', fontSize: '12pt', minLines: 10, maxLines: '10'}" [mode]="'sql'" [readOnly]="false" style="min-height: 200px; width:100%; overflow: auto;">
+                            <ace-editor [(ngModel)]="conf?.query.sql" [autoUpdateContent]="true" [theme]="'eclipse'" name="sql" [options]="{fontFamily: 'courier', fontSize: '12pt', minLines: 10, maxLines: '10'}" [mode]="'sql'" [readOnly]="false" style="min-height: 200px; width:100%; overflow: auto;">
                             </ace-editor>
 
 
@@ -312,7 +309,7 @@
                                 </div>
 
                                 <!-- <div class="col-xs-12 col-md-4" [hidden]="(conf?.connection.type == 'excelsheet' && conf.query.timePeriod == '')"> -->
-                                <div class="col-xs-12 col-md-4" >
+                                <div class="col-xs-12 col-md-4">
                                     <div class="form-group">
                                         <label for="fromTime">Start</label>
                                         <!--<p-calendar  inputId="startTime" [style]="{'width':'100%'}"></p-calendar>-->
@@ -325,8 +322,7 @@
                                 <div class="col-xs-12 col-md-4">
                                     <div class="form-group">
                                         <label for="toTime">End</label>
-                                        <!--<p-calendar  inputId="endTime" [style]="{'width':'100%'}"></p-calendar>-->
-                                         <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" (ngModelChange)="conf? conf.query.toTime =$event : null" name="toTime" placeholder="yyyy-MM-ddThh:mm:ss" size=8>
+                                        <input pInputText id="toTime" class="form-control" [ngModel]="conf?.query.toTime" (ngModelChange)="conf? conf.query.toTime =$event : null" name="toTime" placeholder="yyyy-MM-ddThh:mm:ss" size=8>
                                     </div>
                                 </div>
 
@@ -341,11 +337,37 @@
                             </div>
                         </div>
 
-                        <pre id='resultSQL' style="margin-bottom: 0;"></pre>
+                        <!-- <pre id='resultSQL' style="margin-bottom: 0;"></pre> -->
                     </div>
+
+                    <p-tabView>
+                        <p-tabPanel header="Query Result">
+                            <div id="recordsNumber"></div>
+                            <div id="result">Please hit "Try Extract" button to load the query result.</div>
+                        </p-tabPanel>
+                        <p-tabPanel header="Executed Query">
+
+                            <div id='resultSQL'>Please hit "Try Extract" button to load the Executed Query</div>
+                            <div id="resultTitle"></div>
+                        </p-tabPanel>
+                        <p-tabPanel header="Meta-data">
+                            <p-dataTable [value]="conf.query.metadata" emptyMessage='Please hit "Try Extract" button to load the meta-data information' [editable]="true" name="metadata">
+                                <p-column field="name" header="Name" [editable]="false" [style]="{'width':'200'}"></p-column>
+                                <p-column field="type" header="Type" [editable]="false" [style]="{'width':'180px'}"></p-column>
+                                <!-- <p-column field="convertedtype" header="Converted Type" [editable]="true"></p-column> -->
+                                <!-- <p-column field="description" header="Description" [editable]="true"></p-column> -->
+
+                                <p-column field="description" header="Column Description">
+                                    <ng-template let-col let-md="rowData" let-i="rowIndex" pTemplate="body">
+                                        <input type="text" pInputText [(ngModel)]="md.description" class="form-control" [ngModelOptions]="{standalone: true}" placeholder="Column Description" />
+                                    </ng-template>
+                                </p-column>
+                            </p-dataTable>
+                        </p-tabPanel>
+                    </p-tabView>
                 </div>
-                <div id="resultTitle"></div>
-                <div id="result"></div>
+                <!-- <div id="resultTitle"></div> -->
+                <!-- <div id="result"></div> -->
 
                 <!--<p class="text-right">
 				<button class="btn btn-success" style="margin: 0;"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span> Save</button>

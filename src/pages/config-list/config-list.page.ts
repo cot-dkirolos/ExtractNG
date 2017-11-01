@@ -1,3 +1,4 @@
+import { DataTable } from './../../components/datatable/datatable.component';
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
 import { SharedService } from './../../providers/shared/shared.service';
@@ -18,6 +19,7 @@ declare var Pikaday: any;
 export class ConfigListPage implements OnInit, AfterViewInit {
 
   @ViewChild('tabView') tv: TabView;
+  @ViewChild('mdt') mdt: DataTable;
 
   msg: Message[] = [];
 
@@ -26,21 +28,24 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   activeIndex: number;
 
   configurationList: any;
+  enabledConfigurationList: any;
   usersList: any;
 
   items: MenuItem[];
 
   selectedConf: any;
 
+
   // user: any;
 
   constructor(private extractService: ExtractService, private router: Router, public sharedService: SharedService, public appConfig: AppConfig) {
+
     this.items = [
-      {
-        label: 'Configure', icon: 'fa-tasks', command: () => {
-          this.navigateToModify(this.selectedConf);
-        }
-      },
+      // {
+      //   label: 'Configure', icon: 'fa-tasks', command: () => {
+      //     this.navigateToModify(this.selectedConf);
+      //   }
+      // },
       {
         label: 'Clone', icon: 'fa-files-o', command: () => {
           this.navigateToClone(this.selectedConf);
@@ -74,62 +79,17 @@ export class ConfigListPage implements OnInit, AfterViewInit {
     }
     // console.log(this.sharedService.user);
 
+
+
   }
 
   ngOnInit() {
+
     this.sharedService.setBreadcurmb([{ name: 'Configurations List', link: './#/home' }], true);
     this.loading = true;
     this.getExtractList(this.sharedService.user.dataSources, this.sharedService.user.divisions).then(result => {
       this.sharedService.block = false;
-
-      // let rs = this.configurationList;
-
-      // console.log("result:" + rs + ',length:' + rs.length);
-      // let finalList = [];
-      // for (var index = 0; index < rs.length; index++) {
-      //   let element = rs[index];
-
-      //   if (element.sourceCategory === 'OpenData') {
-      //     element.sourceCategory = 'odata';
-      //   } else {
-      //     element.sourceCategory = 'epm';
-      //   }
-
-
-
-      //   // console.log(element);
-      //   const body = btoa(JSON.stringify(element));
-      //   let data = null;
-      //   if (element.sourceCategory === 'epm') {
-      //     data = {
-      //       QualifiedName: 'Extract/EPM_' + element.group + '/id_' + element.pmID + '.json',
-      //       ConfigContent: body,
-      //       ContentType: 'application/json'
-      //     };
-      //     finalList.push(data);
-      //   }
-      // }
-      // console.log(finalList.length);
-
-      // for (let index = 0; index < finalList.length; index++) {
-      //   const content = finalList[index];
-      //   const configContent = JSON.parse(atob(content.ConfigContent));
-      //   this.extractService.checkIfpmIDExist('id_'+configContent.pmID).then(result => {
-      //     console.log("Config ID : " + configContent.pmID + ", Exist:" + result);
-      //     if (!result) {
-      //       this.extractService.saveExtractConf(content).subscribe(result => {
-      //         this.sharedService.block = false;
-      //         console.log(result);
-      //       },
-      //         err => {
-      //           this.sharedService.block = false;
-      //           console.error(err.json());
-      //         });
-      //     }
-      //   });
-      // }
     });
-
 
   }
 
@@ -138,23 +98,25 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
   getExtractList(sources, division) {
     this.configurationList = [];
+    this.enabledConfigurationList = [];
     const cs = [];
     return new Promise((resolve, reject) => {
       this.extractService.getExtractListBySource(sources, division).subscribe(list => {
         for (let index = 0; index < list.value.length; index++) {
           const conf = list.value[index];
           const tempConf = JSON.parse(window.atob(conf.ConfigContent));
-          // const src = (<string>conf.GroupName).substr(0, (<string>conf.GroupName).indexOf('_')).toLowerCase();
           const src = (<string>tempConf.sourceCategory.toLowerCase());
 
           tempConf.sourceCategory = this.appConfig.getSourceCategoryLabel(src);
-          // tempConf.division = this.appConfig.getDivisionLabel((<string>conf.GroupName).substr((<string>conf.GroupName).indexOf('_') + 1).toLowerCase());
           tempConf.division = this.appConfig.getDivisionLabel(tempConf.group.toLowerCase());
           cs.push(tempConf);
         }
         this.configurationList = cs;
+        // this.hasMetadataList = cs;
+
+        this.enabledConfigurationList = cs;
+        this.mdt.expandedRows = this.enabledConfigurationList;
         this.loading = false;
-        // console.log(JSON.stringify(this.configurationList));
         resolve(this.configurationList);
       },
         err => {
@@ -245,7 +207,7 @@ export class ConfigListPage implements OnInit, AfterViewInit {
     let data;
     let qualifiedName;
     // if (conf.sourceCategory === 'odata' ) {
-    if (conf.sourceCategory === 'odata' || conf.sourceCategory === 'OpenData' ) {
+    if (conf.sourceCategory === 'odata' || conf.sourceCategory === 'OpenData') {
       qualifiedName = 'Extract/OData_' + conf.group + '/aggregator/' + conf.dataset + '.json';
       data = {
         QualifiedName: qualifiedName,
@@ -273,7 +235,7 @@ export class ConfigListPage implements OnInit, AfterViewInit {
 
         this.msg.push({
           severity: 'success', summary: 'Saved', detail: 'Extract configuration ' +
-            (conf.enabled ? 'enabled' : 'disabled') + ' successfully'
+          (conf.enabled ? 'enabled' : 'disabled') + ' successfully'
         });
         this.sharedService.msgs = this.msg;
         // console.log(result);
@@ -285,8 +247,10 @@ export class ConfigListPage implements OnInit, AfterViewInit {
         err => {
           this.sharedService.block = false;
           console.log(err.json());
-          this.msg.push({ severity: 'error', summary: 'Failed', detail: 'Failed to ' +
-          (conf.enabled ? 'enable' : 'disable' ) + ' the Extract configuration, ' + err.json().error.message });
+          this.msg.push({
+            severity: 'error', summary: 'Failed', detail: 'Failed to ' +
+            (conf.enabled ? 'enable' : 'disable') + ' the Extract configuration, ' + err.json().error.message
+          });
           this.sharedService.msgs = this.msg;
           jQuery('#savedMsg').html('<span class="badResultCode">' + err.json().error.message + '</span>');
           // jQuery('#savedMsg').html('<span class="badResultCode">Could not save, please try again later.</span>');
@@ -300,5 +264,4 @@ export class ConfigListPage implements OnInit, AfterViewInit {
     }
 
   }
-
 }

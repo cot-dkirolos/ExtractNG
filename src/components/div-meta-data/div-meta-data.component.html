@@ -1,0 +1,47 @@
+<div id="result"></div>
+<div *ngIf="!selectedConfig?.query.metadata || selectedConfig?.query.metadata.length < 1 || isError">
+    <span class="badResultCode">An error occurred during loading metadata, Please check extract configuration</span>
+    <button type="button" pButton class="ui-button-secondary" icon="fa fa-list" label="Configure" (click)="navigateToModify(conf)"></button>
+</div>
+<!-- <div class="panel panel-default" *ngIf="selectedConfig?.query.metadata && selectedConfig?.query.metadata.length > 0">
+    <div class="panel-heading">
+      <div class="row">
+        <div class="col-xs-12">
+            <h3 class="text-left ">{{conf.pmID}}</h3>
+        </div>
+        <div class="col-xs-6">
+            <p class="text-right">
+                <span id='savedMsg'></span>
+                <button pButton icon="fa-floppy-o" id='saveBtn' style="margin: 0;" (click)="saveConfig()" label="Save"  [disabled]="sharedService.block"></button>
+            </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="panel-body"> -->
+
+        <p-dataTable *ngIf="selectedConfig?.query.metadata && selectedConfig?.query.metadata.length > 0" [value]="selectedConfig?.query.metadata" [exportFilename]="selectedConfig.pmID" #metadataT  emptyMessage='Could not load metadata.' name="metadata">
+            <p-header>
+                <div class="ui-helper-clearfix">
+                    <button type="button" pButton icon="fa-file-o" iconPos="left" label="Export Meta-data" (click)="metadataT.exportCSV()" style="float:left;font-size: 0.8em;"></button>
+
+
+                    <button type="button" pButton icon="fa-floppy-o" iconPos="left" label="Save" (click)="saveConfig()" [disabled]="sharedService.block" style="float:right;font-size: 0.8em;"></button>
+                    <span #savedMsg id='savedMsg' style="float:right;font-size: 0.8em;"></span>
+                </div>
+            </p-header>
+
+            <p-column field="name" header="Name" [editable]="false" [style]="{'width':'200'}"></p-column>
+            <p-column field="type" header="Type" [editable]="false" [style]="{'width':'180px'}"></p-column>
+
+            <p-column field="description" header="Column Description">
+                <ng-template let-col let-md="rowData" let-i="rowIndex" pTemplate="body">
+                    <input type="text" pInputText [(ngModel)]="md.description" class="form-control" [ngModelOptions]="{standalone: true}" placeholder="Column Description" />
+                </ng-template>
+            </p-column>
+
+        </p-dataTable>
+
+    <!-- </div>
+</div> -->
