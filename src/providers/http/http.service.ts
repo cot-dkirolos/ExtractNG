@@ -96,7 +96,7 @@ export class HttpService extends Http {
         (<Request>url).url = this.configAPIUrl + url.url;
       } else if (url.url.startsWith('/extract/')) {
         (<Request>url).url = this.extractAPIUrl + url.url;
-      } else if (url.url.startsWith('/schedule/')) {
+      } else if (url.url.startsWith('/c3_scheduler/')) {
         (<Request>url).url = this.schedulerAPIUrl + url.url;
       }
       // (<Request>url).url = (baseURI ? baseURI : this.baseUrl) + url.url;

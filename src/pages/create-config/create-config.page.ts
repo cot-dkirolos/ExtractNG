@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
@@ -416,32 +417,41 @@ export class CreateConfigPage implements OnInit, OnDestroy, AfterViewInit {
         if (!isExist) {
 
           const body = btoa(JSON.stringify(this.conf));
-          let data;
-          if (this.conf.sourceCategory === 'odata') {
-            data = {
-              QualifiedName: 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json',
-              ConfigContent: body,
-              ContentType: 'application/json',
-              APIName: 'aggregator'
-            };
-          } else {
+          // let data;
+          // if (this.conf.sourceCategory === 'odata') {
+          //   data = {
+          //     QualifiedName: '' + environment.configAPIAppName + '/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json',
+          //     ConfigContent: body,
+          //     ContentType: 'application/json',
+          //     APIName: 'aggregator'
+          //   };
+          // } else {
 
-            let qualifiedName = '';
+          //   let qualifiedName = '';
 
-            if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
-              qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-            } else {
-              qualifiedName = 'Extract/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-            }
-            this.conf.dataset = null;
+          //   if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
+          //     qualifiedName = '' + environment.configAPIAppName + '/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+          //   } else {
+          //     qualifiedName = '' + environment.configAPIAppName + '/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+          //   }
+          //   this.conf.dataset = null;
 
-            data = {
-              QualifiedName: qualifiedName,
-              ConfigContent: body,
-              ContentType: 'application/json'
-            };
+          //   data = {
+          //     QualifiedName: qualifiedName,
+          //     ConfigContent: body,
+          //     ContentType: 'application/json'
+          //   };
 
-          }
+          // }
+
+          const qualifiedName = '' + environment.configAPIAppName + '/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+          this.conf.dataset = null;
+          const data = {
+            QualifiedName: qualifiedName,
+            ConfigContent: body,
+            ContentType: 'application/json'
+          };
+
           if (data) {
             jQuery('#savedMsg').show();
             jQuery('#savedMsg').html('Saving...');

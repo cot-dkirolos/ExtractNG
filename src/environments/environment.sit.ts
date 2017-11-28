@@ -9,5 +9,6 @@ export const environment = {
   apiUrl: 'https://was-intra-sit.toronto.ca',
   extractAPIUrl: 'https://was-intra-sit.toronto.ca',
   configAPIUrl: 'https://was-intra-sit.toronto.ca',
+  configAPIAppName: 'Extract',
   schedulerAPIUrl: 'http://shelby.corp.toronto.ca:9180'
 };

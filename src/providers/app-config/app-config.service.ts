@@ -1,3 +1,4 @@
+
 import { environment } from './../../environments/environment';
 import { SharedService } from './../shared/shared.service';
 
@@ -10,12 +11,12 @@ declare const jQuery: any;
 @Injectable()
 export class AppConfig {
 
-  // private appConfigUsersGroupsURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
-  // private appConfigUsersURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_users/users.json')/ConfigContent`;
-  // private appConfigDataURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_data/app_data.json')/ConfigContent`;
-  private appConfigUsersGroupsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
-  private appConfigUsersURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_users/users.json')/ConfigContent`;
-  private appConfigDataURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('Extract/AppConfig_data/app_data.json')/ConfigContent`;
+  // private appConfigUsersGroupsURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
+  // private appConfigUsersURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_users/users.json')/ConfigContent`;
+  // private appConfigDataURL = `https://was-intra-sit.toronto.ca/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_data/app_data.json')/ConfigContent`;
+  private appConfigUsersGroupsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_usersGroups/usersGroups.json')/ConfigContent`;
+  private appConfigUsersURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_users/users.json')/ConfigContent`;
+  private appConfigDataURL = `/c3api_config/v2/ConfigService.svc/ConfigSet('${environment.configAPIAppName}/AppConfig_data/app_data.json')/ConfigContent`;
 
   systemConfiguration: any;
   baseUrl:string;
@@ -354,7 +355,7 @@ export class AppConfig {
     return new Promise((resolve, reject) => {
 
       http.get(this.appConfigDataURL).map(res => res.json()).catch((error: any): any => {
-        console.log('Configuration file "Extract/AppConfig_data/app_data.json" could not be read');
+        console.log('Configuration file "bugatti/AppConfig_data/app_data.json" could not be read');
         resolve(true);
         return Observable.throw(error.json().error || 'Server error');
       }).subscribe((configResponse) => {
@@ -369,7 +370,7 @@ export class AppConfig {
           userGroupsRequest
             .map(res => res.json())
             .catch((error: any) => {
-              console.error('Error reading "Extract/AppConfig_usersGroups/usersGroups.json" configuration file');
+              console.error('Error reading "bugatti/AppConfig_usersGroups/usersGroups.json" configuration file');
               resolve(error);
               return Observable.throw(error.json().error || 'Server error');
             })
@@ -384,7 +385,7 @@ export class AppConfig {
                 usersRequest
                   .map(res => res.json())
                   .catch((error: any) => {
-                    console.error('Error reading "Extract/AppConfig_usersGroups/usersGroups.json" configuration file');
+                    console.error('Error reading "bugatti/AppConfig_usersGroups/usersGroups.json" configuration file');
                     resolve(error);
                     return Observable.throw(error.json().error || 'Server error');
                   })

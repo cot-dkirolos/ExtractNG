@@ -9,5 +9,6 @@ export const environment = {
   apiUrl: '',
   extractAPIUrl: '',
   configAPIUrl: '',
+  configAPIAppName: 'Extract',
   schedulerAPIUrl: ''
 };

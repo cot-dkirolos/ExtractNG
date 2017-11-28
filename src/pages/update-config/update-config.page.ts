@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment.java';
 
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
@@ -16,6 +17,8 @@ declare var jQuery: any;
 declare var ace: any;
 declare var Pikaday: any;
 declare var Handsontable: any;
+
+
 
 @Component({
   selector: 'app-update-config',
@@ -62,6 +65,7 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
   oldConfig: any;
 
   isEditDisabled: Boolean = false;
+
 
 
   constructor(private extractService: ExtractService,
@@ -482,31 +486,41 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
       //   this.conf.query.toTime = null;
       // }
       const body = btoa(JSON.stringify(this.conf));
-      let data;
-      let qualifiedName;
-      if (this.conf.sourceCategory === 'odata') {
-        qualifiedName = 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
-        data = {
-          QualifiedName: qualifiedName,
-          ConfigContent: body,
-          ContentType: 'application/json',
-          APIName: 'aggregator'
-        }
-      } else {
-        if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
-          qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-        } else {
-          qualifiedName = 'Extract/' + this.conf.sourceCategory.toLocaleUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-        }
-        this.conf.dataset = null;
+      // let data;
+      // let qualifiedName;
+      // if (this.conf.sourceCategory === 'odata') {
+      //   qualifiedName = '' + environment.configAPIAppName + '/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
+      //   data = {
+      //     QualifiedName: qualifiedName,
+      //     ConfigContent: body,
+      //     ContentType: 'application/json',
+      //     APIName: 'aggregator'
+      //   }
+      // } else {
+      //   if (this.conf.sourceCategory.toUpperCase() == 'EPM') {
+      //     qualifiedName = '' + environment.configAPIAppName + '/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+      //   } else {
+      //     qualifiedName = '' + environment.configAPIAppName + '/' + this.conf.sourceCategory.toUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+      //   }
+      //   this.conf.dataset = null;
 
-        data = {
-          QualifiedName: qualifiedName,
-          ConfigContent: body,
-          ContentType: 'application/json'
-        }
+      //   data = {
+      //     QualifiedName: qualifiedName,
+      //     ConfigContent: body,
+      //     ContentType: 'application/json'
+      //   }
 
-      }
+      // }
+
+
+      const qualifiedName = '' + environment.configAPIAppName + '/' + this.conf.sourceCategory.toUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+      this.conf.dataset = null;
+      const data = {
+        QualifiedName: qualifiedName,
+        ConfigContent: body,
+        ContentType: 'application/json'
+      };
+
       if (data) {
         jQuery('#savedMsg').show();
         jQuery('#savedMsg').html('Saving...');
@@ -571,12 +585,15 @@ export class UpdateConfigPage implements OnInit, OnDestroy, AfterViewInit {
         this.sharedService.block = true;
         this.msgs = [];
 
-        let qualifiedName;
-        if (this.conf.sourceCategory === 'odata') {
-          qualifiedName = 'Extract/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
-        } else {
-          qualifiedName = 'Extract/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
-        }
+        // let qualifiedName;
+        // if (this.conf.sourceCategory === 'odata') {
+        //   qualifiedName = '' + environment.configAPIAppName + '/OData_' + this.conf.group + '/aggregator/' + this.conf.dataset + '.json';
+        // } else {
+        //   qualifiedName = '' + environment.configAPIAppName + '/EPM_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+        // }
+
+        const qualifiedName = '' + environment.configAPIAppName + '/' + this.conf.sourceCategory.toUpperCase() + '_' + this.conf.group + '/id_' + this.conf.pmID + '.json';
+
         this.extractService.deleteExtractConf(qualifiedName).subscribe(result => {
           // console.log(result);
           this.msgs.push({ severity: 'success', summary: 'Deleted', detail: 'Configuration deleted' });

@@ -3,6 +3,7 @@ import { HttpService } from './../http/http.service';
 import { Injectable, Inject } from '@angular/core';
 import { Http, Request, Response, Headers, RequestOptions } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
+import { environment } from './../../environments/environment';
 
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -23,14 +24,15 @@ export class ExtractService {
   private validateConnectionUrl = '/extract/source/try/';
   private queryURL = '/extract/try';
   private setConfUrl = '/c3api_config/v2/ConfigService.svc/ConfigSet';
-  private getMetaDataUrl = 'extract/getMetaData/{SOURCES}/{DIVISIONS}';
-  private apiConfigExtractsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet?$filter={SOURCES}ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
+  private getMetaDataUrl = '/extract/getMetaData/{SOURCES}/{DIVISIONS}';
+  private updateMetaDataUrl = '/extract/updateMetaData';
+  private apiConfigExtractsURL = `/c3api_config/v2/ConfigService.svc/ConfigSet?$filter={SOURCES}ApplicationName eq '${environment.configAPIAppName}' and Status eq 'active'&$orderby=QualifiedName`;
 
   constructor(private httpService: HttpService, private http: Http) {
   }
 
   getExtractByGUID(GUID: string) {
-    let url = `/c3api_config/v2/ConfigService.svc/ConfigSet?$select=QualifiedName,ConfigContent,User,UpdateTime&$filter=endswith(QualifiedName,'{GUID}') and ApplicationName eq 'Extract' and Status eq 'active'&$orderby=QualifiedName`;
+    let url = `/c3api_config/v2/ConfigService.svc/ConfigSet?$select=QualifiedName,ConfigContent,User,UpdateTime&$filter=endswith(QualifiedName,'{GUID}') and ApplicationName eq '${environment.configAPIAppName}' and Status eq 'active'&$orderby=QualifiedName`;
     let link = url.replace('{GUID}', '/' + GUID + '.json');
     // console.log(link);
     return this.httpService.get(link)
@@ -85,6 +87,21 @@ export class ExtractService {
       .catch((error: any) => Observable.throw(error)); // ...errors if any
   }
 
+  updateMetaData(data) {
+
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+
+    headers.append('Authorization', `AuthSession ${jQuery.cookie('extract.sid')}`);
+
+    return this.httpService.post(this.updateMetaDataUrl, data, { headers: headers })
+      .map((res: Response) => {
+        return res.json();
+      }) // ...and calling .json() on the response to return data
+      .catch((error: any) => Observable.throw(error)); // ...errors if any
+  }
+
   deleteExtractConf(qualifiedName) {
 
     const headers = new Headers();
@@ -109,7 +126,7 @@ export class ExtractService {
 
     headers.append('Authorization', `AuthSession ${jQuery.cookie('extract.sid')}`);
 
-    return this.httpService.put(this.setConfUrl + `('Extract/AppConfig_users/users.json')`, users, { headers: headers })
+    return this.httpService.put(this.setConfUrl + `('${environment.configAPIAppName}/AppConfig_users/users.json')`, users, { headers: headers })
       .map((res: Response) => {
         return res.json();
       }) // ...and calling .json() on the response to return data
@@ -126,22 +143,11 @@ export class ExtractService {
   }
 
   executeExtractQuery(data: any, sourceCategory: any) {
-    if (sourceCategory && sourceCategory === 'xxx') { //should be if (sourceCategory && sourceCategory === 'xxx') {
-      const link = "http://j2xn0137211.wkstn.toronto.ca:9080/CC_API/Odata_extract/result";
-      return this.http.post(link, data)
-        .map((res: Response) => {
-          return res.json().value[0];
-        }) // ...and calling .json() on the response to return data
-        .catch((error: any) => Observable.throw(error)); // ...errors if any
-
-    } else {
-
       return this.httpService.post(this.queryURL, data)
         .map((res: Response) => {
           return res.json();
         }) // ...and calling .json() on the response to return data
         .catch((error: any) => Observable.throw(error)); // ...errors if any
-    }
   }
 
   validateURL(connectionUrl) {
@@ -156,8 +162,9 @@ export class ExtractService {
       .catch((error: any) => Observable.throw(error)); // ...errors if any
   }
 
-  getMetaSataListBySource(sources, divisions) {
-    const link = this.getMetaDataUrl.replace('{SOURCES}', sources).replace('{DIVISIONS}', divisions)
+  getMetaDataListBySource(sources, divisions) {
+    const link = this.getMetaDataUrl.replace('{SOURCES}', sources.toString().toUpperCase()).replace('{DIVISIONS}', divisions)
+    // const link = this.getMetaDataUrl.replace('{SOURCES}', 'EPM').replace('{DIVISIONS}', divisions)
     // console.log(link);
     return this.httpService.get(link)
       .map((res: Response) => {
@@ -178,7 +185,7 @@ export class ExtractService {
       for (let index = 0; index < sources.length; index++) {
         const element: string = sources[index];
         if (index === 0) {
-          src = src + `startswith(GroupName,'${element.toUpperCase() === 'ODATA' ? 'OData' : element.toUpperCase() +
+          src = src + `startswith(GroupName,'${element.toUpperCase() === 'ODATA' ? 'ODATA' : element.toUpperCase() +
             '_' + (division ? (division.toLowerCase() === 'all' ? '' : division.toLowerCase()) : '')}')`;
 
           // src = src + `startswith(GroupName,'${element.toUpperCase() === 'ODATA' ? 'OData' : element.toUpperCase() + '_'}` ;
@@ -192,7 +199,7 @@ export class ExtractService {
           // division ? (division.toLowerCase() === 'all' ? '' : division.toLowerCase()) : '' + ')';
           // src = src + `startswith(toupper(GroupName),'${element.toUpperCase()}')`;
         } else {
-          src = src + ` or startswith(GroupName,'${(element.toUpperCase() === 'ODATA' ? 'OData' : element.toUpperCase()) + '_' + (division ? (division.toLowerCase() === 'all' ? '' : division.toLowerCase()) : '')}')`;
+          src = src + ` or startswith(GroupName,'${(element.toUpperCase() === 'ODATA' ? 'ODATA' : element.toUpperCase()) + '_' + (division ? (division.toLowerCase() === 'all' ? '' : division.toLowerCase()) : '')}')`;
           // src = src + ` or startswith(toupper(GroupName),'${element.toUpperCase()}')`;
         }
       }

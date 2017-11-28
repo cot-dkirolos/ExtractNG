@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment.bugatti';
 import { ExtractService } from './../../providers/extract/extract.service';
 import { SharedService } from './../../providers/shared/shared.service';
 import { AppConfig } from './../../providers/app-config/app-config.service';
@@ -70,7 +71,7 @@ export class NewUserPage implements OnInit {
 
         const body = btoa(JSON.stringify(users));
         let data;
-        const qualifiedName = 'Extract/AppConfig_users/users.json';
+        const qualifiedName = '' + environment.configAPIAppName + '/AppConfig_users/users.json';
         data = {
           QualifiedName: qualifiedName,
           ConfigContent: body,

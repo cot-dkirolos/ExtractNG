@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment.sit';
 import { DataTable } from './../../components/datatable/datatable.component';
 import { AppConfig } from './../../providers/app-config/app-config.service';
 import { Configuration } from './../../model/config';
@@ -32,9 +33,15 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   usersList: any;
 
   items: MenuItem[];
+  metaDataMenu: MenuItem[];
 
   selectedConf: any;
 
+  metaDataList: any;
+
+  updatedMetadatList = [];
+
+  msgs: Message[] = [];
 
   // user: any;
 
@@ -52,6 +59,13 @@ export class ConfigListPage implements OnInit, AfterViewInit {
         }
       }
     ];
+
+    this.metaDataMenu = [];
+    this.metaDataMenu.push( {
+      label: 'Export CSV', icon: 'fa-list', command: () => {
+        this.exportCSV();
+      }
+    })
     this.activeIndex = 0;
     this.sharedService.user = this.appConfig.getCurrentUser();
     this.usersList = this.appConfig.getUsersList();
@@ -99,8 +113,32 @@ export class ConfigListPage implements OnInit, AfterViewInit {
   getExtractList(sources, division) {
     this.configurationList = [];
     this.enabledConfigurationList = [];
+    this.metaDataList = [];
     const cs = [];
+    const mcs = [];
     return new Promise((resolve, reject) => {
+      this.extractService.getMetaDataListBySource(sources, division).subscribe(list => {
+        console.log('====================================');
+        console.log(list.metaData);
+        console.log('====================================');
+        for (let index = 0; index < list.metaData.length; index++) {
+          const conf = list.metaData[index];
+          conf.col_isPrivate = JSON.parse(conf.col_isPrivate);
+          // const src = (<string>conf.sourceCategory.toLowerCase());
+
+          // conf.sourceCategoryL = this.appConfig.getSourceCategoryLabel(src);
+          // conf.divisionL = this.appConfig.getDivisionLabel(conf.division.toLowerCase());
+          mcs.push(conf);
+        }
+        this.metaDataList = mcs;
+        console.log('====================================');
+        console.log(this.metaDataList);
+        console.log('====================================');
+      },
+        err => {
+          this.loading = false;
+        });
+
       this.extractService.getExtractListBySource(sources, division).subscribe(list => {
         for (let index = 0; index < list.value.length; index++) {
           const conf = list.value[index];
@@ -208,7 +246,7 @@ export class ConfigListPage implements OnInit, AfterViewInit {
     let qualifiedName;
     // if (conf.sourceCategory === 'odata' ) {
     if (conf.sourceCategory === 'odata' || conf.sourceCategory === 'OpenData') {
-      qualifiedName = 'Extract/OData_' + conf.group + '/aggregator/' + conf.dataset + '.json';
+      qualifiedName = '' + environment.configAPIAppName + '/OData_' + conf.group + '/aggregator/' + conf.dataset + '.json';
       data = {
         QualifiedName: qualifiedName,
         ConfigContent: body,
@@ -217,7 +255,7 @@ export class ConfigListPage implements OnInit, AfterViewInit {
       };
     } else {
       conf.dataset = null;
-      qualifiedName = 'Extract/EPM_' + conf.group + '/id_' + conf.pmID + '.json';
+      qualifiedName = '' + environment.configAPIAppName + '/EPM_' + conf.group + '/id_' + conf.pmID + '.json';
 
       data = {
         QualifiedName: qualifiedName,
@@ -263,5 +301,143 @@ export class ConfigListPage implements OnInit, AfterViewInit {
       this.sharedService.block = false;
     }
 
+  }
+
+
+  public exportCSV() {
+    let data = this.metaDataList;
+    let csv = '\ufeff';
+
+
+    //headers
+    const columnsHeaders = [
+      'sourceCategoryLabel',
+      'divisionLabel',
+      'pmID',
+      'name',
+      'col_name',
+      'col_type',
+      'col_description',
+      'col_isPrivate'
+    ];
+
+    csv += [
+      'Source Category',
+      'Division',
+      'Extract ID',
+      'Extract Name',
+      'Column Name',
+      'Column Type',
+      'Column Description',
+      'Column is Private'
+    ] + ',';
+
+    //body
+    data.forEach((record, i) => {
+      csv += '\n';
+      for (let i = 0; i < columnsHeaders.length; i++) {
+        if (columnsHeaders[i]) {
+          csv += '"' + this.resolveFieldData(record, columnsHeaders[i]) + '"';
+
+          if (i < (columnsHeaders.length - 1)) {
+            csv += ',';
+          }
+        }
+      }
+    });
+
+    let blob = new Blob([csv], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    if (window.navigator.msSaveOrOpenBlob) {
+      navigator.msSaveOrOpenBlob(blob, 'MetaData.csv');
+    }
+    else {
+      let link = document.createElement("a");
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      if (link.download !== undefined) {
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', 'MetaData.csv');
+        link.click();
+      }
+      else {
+        csv = 'data:text/csv;charset=utf-8,' + csv;
+        window.open(encodeURI(csv));
+      }
+      document.body.removeChild(link);
+    }
+  }
+
+  resolveFieldData(data: any, field: string): any {
+    if (data && field) {
+      if (field.indexOf('.') == -1) {
+        return data[field];
+      }
+      else {
+        let fields: string[] = field.split('.');
+        let value = data;
+        for (var i = 0, len = fields.length; i < len; ++i) {
+          if (value == null) {
+            return null;
+          }
+          value = value[fields[i]];
+        }
+        return value;
+      }
+    }
+    else {
+      return null;
+    }
+  }
+
+  metaDataChanged(data, event) {
+
+    let confIndx = -1;
+    for (let index = 0; index < this.updatedMetadatList.length; index++) {
+      const element = this.updatedMetadatList[index];
+      if(element.pmID == data.pmID && element.col_name == data.col_name){
+        confIndx = index;
+      }
+    }
+    if(confIndx > -1){
+      this.updatedMetadatList[confIndx] = data;
+    }else{
+      this.updatedMetadatList.push(data);
+    }
+
+  }
+
+  updateMetaData(){
+
+    const data = {
+      metaData: this.updatedMetadatList,
+      sourceCategory :  typeof this.sharedService.user.dataSources === 'string' ? this.sharedService.user.dataSources.toUpperCase() : this.sharedService.user.dataSources.join().toUpperCase() ,
+      division : typeof this.sharedService.user.divisions === 'string' ? this.sharedService.user.divisions.toUpperCase() : this.sharedService.user.divisions.join().toUpperCase(),
+    }
+
+    this.extractService.updateMetaData(data).subscribe( result => {
+      // console.log(result);
+      if(result.code == 200 ){
+      this.msgs.push({ severity: 'success', summary: 'Updated', detail: result.message });
+      this.metaDataList = result.metaData;
+      } else if(result.code == 0 ){
+        this.msgs.push({ severity: 'warn', summary: 'Warning', detail: result.message });
+        this.metaDataList = result.metaData;
+      }else{
+        this.msgs.push({ severity: 'error', summary: 'Failed', detail: result.message });
+      }
+
+      this.sharedService.block = true;
+      this.sharedService.msgs = this.msgs;
+      this.sharedService.block = false;
+      // this.router.navigate(['/home']);
+    },
+      err => {
+        this.msgs.push({ severity: 'error', summary: 'Failed', detail: 'Failed to update Metadata' });
+        this.sharedService.msgs = this.msgs;
+        this.sharedService.block = false;
+      });
   }
 }

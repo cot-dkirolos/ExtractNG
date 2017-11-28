@@ -18,7 +18,7 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Extract Meta-data</h3>
+                        <h3 class="panel-title">Extract Information</h3>
                     </div>
 
                     <div class="panel-body">
@@ -115,8 +115,7 @@
                 </div>
 
 
-                <!--<div class="panel panel-default" *ngIf="configurationType && configurationType == 'odata'">-->
-                <div [hidden]="!conf.sourceCategory || conf.sourceCategory !== 'odata'">
+              <!-- <div [hidden]="!conf.sourceCategory || conf.sourceCategory !== 'odata'">
                     <div class="panel panel-default">
 
                         <div class="panel-heading">
@@ -129,7 +128,6 @@
                                 <div class="col-xs-12">
                                     <div class="form-group">
                                         <label for="interval">Interval</label>
-                                        <!--<p-inputMask  [ngModel]="conf?.interval" (ngModelChange)="conf ? conf.interval=$event : null" mask="9999"  name="interval" inputId="interval"></p-inputMask>-->
                                         <input type="text" pInputText [maxlength]="4" (keypress)="numbersOnly($event)" [ngModel]="conf?.interval" (ngModelChange)="conf ? conf.interval=$event : null" name="interval" class="form-control" id="interval" placeholder="Interval">
                                     </div>
                                 </div>
@@ -170,7 +168,6 @@
                                 <div class="col-xs-12">
                                     <div class="form-group">
                                         <label for="oDataUrlField">URL</label>
-                                        <!--[ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.dataset ? conf.dataset : '') : ''"-->
                                         <input pInputText type="text" class="form-control" id="oDataUrlField" placeholder="" #url="ngModel" name="url" [readonly]="conf.connection.type" (ngModelChange)="conf ? conf.url=$event : null" [ngModel]="conf.connection.type ? 'http://shelby.corp.toronto.ca:9080/extract/data/'+ (conf.pmID ? 'id_'+conf.pmID : '') : ''"
                                             [required]="!conf.connection.type || conf.connection.type == ''">
                                         <span class="badResultCode" [hidden]="(url.valid || url.disabled) || (url.pristine && !f.submitted)">
@@ -181,7 +178,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <div class="panel panel-default" ngModelGroup="connection">
                     <div class="panel-heading">
@@ -351,12 +348,25 @@
                             <div id="resultTitle"></div>
                         </p-tabPanel>
                         <p-tabPanel header="Meta-data">
+                                <div id="metadataPrivacy">
+                                  <ul>
+                                    <li>Privacy Flag shall be checked when this field may be considered to contain personal identifiable information.</li>
+                                  <li>Personally identifiable information (PII) is any data that could potentially identify a specific individual. </li>
+                                    <li>Any information that can be used to distinguish one person from another and can be used for de-anonymizing anonymous data can be considered PII.</li>
+
+                                    </ul>
+                                  </div>
                             <p-dataTable [value]="conf.query.metadata" emptyMessage='Please hit "Try Extract" button to load the meta-data information' [editable]="true" name="metadata">
                                 <p-column field="name" header="Name" [editable]="false" [style]="{'width':'200'}"></p-column>
                                 <p-column field="type" header="Type" [editable]="false" [style]="{'width':'180px'}"></p-column>
                                 <!-- <p-column field="convertedtype" header="Converted Type" [editable]="true"></p-column> -->
                                 <!-- <p-column field="description" header="Description" [editable]="true"></p-column> -->
 
+                                <p-column field="isPrivate" header="Privacy" [style]="{'width':'100px'}" >
+                                    <ng-template  let-col let-md="rowData" let-i="rowIndex" pTemplate="body">
+                                        <p-checkbox [(ngModel)]="md.isPrivate" binary="true" [ngModelOptions]="{standalone: true}"></p-checkbox>
+                                    </ng-template>
+                                </p-column>
                                 <p-column field="description" header="Column Description">
                                     <ng-template let-col let-md="rowData" let-i="rowIndex" pTemplate="body">
                                         <input type="text" pInputText [(ngModel)]="md.description" class="form-control" [ngModelOptions]="{standalone: true}" placeholder="Column Description" />

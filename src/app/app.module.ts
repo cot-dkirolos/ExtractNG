@@ -10,7 +10,7 @@ import { ConfigListPage } from './../pages/config-list/config-list.page';
 import { CreateConfigPage } from './../pages/create-config/create-config.page';
 // import { CalendarModule } from './../components/calendar/calendar.component';
 import { ObjectUtils } from './../providers/utils/object-utils';
-import { DropdownModule } from './../components/dropdown/dropdown.component';
+// import { DropdownModule } from './../components/dropdown/dropdown.component';
 import { AceEditorComponent } from './../components/ace-editor/ace-editor.component';
 import { ExtractService } from './../providers/extract/extract.service';
 import { AuthenticationService } from './../providers/auth/authentication.service';
@@ -37,7 +37,7 @@ import {
   InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule,
   InputTextModule, ButtonModule, PanelModule,  SharedModule, MultiSelectModule, TabViewModule,
   ConfirmDialogModule,ConfirmationService,GrowlModule,MessagesModule,TooltipModule,MenuModule,InputSwitchModule,
-  ToggleButtonModule, SelectButtonModule,ListboxModule,CalendarModule
+  ToggleButtonModule, SelectButtonModule,ListboxModule,CalendarModule,CheckboxModule,DropdownModule
 } from 'primeng/primeng';
 
 export function httpFactory(backend: XHRBackend, options: RequestOptions, router: Router, sharedService: SharedService) {
@@ -83,7 +83,8 @@ export function initConfig(config: AppConfig, httpService: Http) {
     InputTextModule, ButtonModule,
     InputMaskModule, SpinnerModule, SliderModule, SplitButtonModule, DialogModule, ToolbarModule, CalendarModule,
     PanelModule, DataTableModule, SharedModule, MultiSelectModule, DropdownModule, TabViewModule,ConfirmDialogModule,
-    GrowlModule,MessagesModule,PaginatorModule,TooltipModule,MenuModule,InputSwitchModule,ToggleButtonModule,SelectButtonModule,ListboxModule
+    GrowlModule,MessagesModule,PaginatorModule,TooltipModule,MenuModule,InputSwitchModule,
+    ToggleButtonModule,SelectButtonModule,ListboxModule,CheckboxModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [AuthenticationService, ExtractService, ObjectUtils,ConfirmationService,
